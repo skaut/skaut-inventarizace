@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity$RoleFragment">
+
+    <RelativeLayout
+        android:id="@+id/roleBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <Spinner
+            android:id="@+id/roleSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/roleSpinner"
+            android:text="@string/choose"
+            android:textSize="15sp"
+            android:id="@+id/chooseButton" />
+    </RelativeLayout>
+
+    <include
+        layout="@layout/progress_wheel"
+        android:visibility="gone"
+        android:id="@+id/progressWheel" />
+
+</RelativeLayout>

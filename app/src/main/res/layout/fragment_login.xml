@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity$LoginFragment">
+
+    <RelativeLayout
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/loginBox">
+
+            <TextView
+                android:text="@string/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/appName"
+                android:textSize="30sp"
+                android:layout_centerHorizontal="true" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/login_user_name"
+                android:id="@+id/userName"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/appName"
+                android:inputType="text|textNoSuggestions" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password_hint"
+                android:id="@+id/password"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/userName"
+                android:inputType="textPassword|textNoSuggestions" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/password"
+                android:text="@string/login"
+                android:textSize="15sp"
+                android:id="@+id/loginButton" />
+        </RelativeLayout>
+
+        <include
+            android:id="@+id/progressWheel"
+            android:visibility="gone"
+            layout="@layout/progress_wheel" />
+    </RelativeLayout>
+</RelativeLayout>

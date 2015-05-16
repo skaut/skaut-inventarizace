@@ -1,0 +1,16 @@
+language: android
+
+android:
+  components:
+    - build-tools-22.0.0
+    - android-22
+    - extra-android-m2repository
+
+notifications:
+  email: false
+
+before_install:
+    - sudo chmod +x gradlew
+
+script:
+    - ./gradlew assembleDebug

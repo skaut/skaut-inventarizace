@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+
+            <ImageView
+                android:id="@+id/itemPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/photo_description"
+                android:src="@drawable/no_photo" />
+
+            <include
+                android:id="@+id/progressWheel"
+                layout="@layout/progress_wheel"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/divider"
+            android:dividerPadding="@dimen/activity_horizontal_margin"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <LinearLayout
+                style="@style/itemAttributeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemDescription"
+                    style="@style/itemAttribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Popis" />
+
+                <TextView
+                    style="@style/itemAttributeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/description" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/itemAttributeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemInventoryNumber"
+                    style="@style/itemAttribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="od88-fd456fsd156-4f5d" />
+
+                <TextView
+                    style="@style/itemAttributeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/inventory_number" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/itemAttributeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemPurchasePrice"
+                    style="@style/itemAttribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="150000 Kč" />
+
+                <TextView
+                    style="@style/itemAttributeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/purchase_price" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/itemAttributeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemPurchaseDate"
+                    style="@style/itemAttribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="1.1.1970" />
+
+                <TextView
+                    style="@style/itemAttributeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/purchase_date" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/itemAttributeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemLatestInventory"
+                    style="@style/itemAttribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="20. 3. 2015" />
+
+                <TextView
+                    style="@style/itemAttributeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/latest_inventory" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
