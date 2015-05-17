@@ -1,7 +1,6 @@
 package cz.skaut.warehousemanager.helper;
 
 
-import android.os.Looper;
 import android.text.TextUtils;
 
 import java.text.DateFormat;
@@ -69,13 +68,5 @@ public class DateTimeUtils {
 
     public static long getCurrentTimestamp() {
         return new Date().getTime();
-    }
-
-    public static void thread() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Timber.d("MAIN THREAD");
-        } else {
-            Timber.d("BACK THREAD");
-        }
     }
 }

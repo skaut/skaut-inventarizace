@@ -10,6 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * @author Antonio Abad
+ *         https://gist.github.com/lapastillaroja/858caf1a82791b6c1a36
+ */
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private final Drawable mDivider;
