@@ -32,5 +32,5 @@
     <string name="save">Uložit</string>
     <string name="cancel">Zrušit</string>
     <string name="never">nikdy</string>
-    <string name="get_photo_error">Unexpected error while fetching photo</string>
+    <string name="get_photo_error">Neočekávaná chyba</string>
 </resources>

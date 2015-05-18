@@ -6,9 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.squareup.leakcanary.LeakCanary;
-
-import cz.skaut.warehousemanager.helper.C;
 import cz.skaut.warehousemanager.manager.ItemManager;
 import cz.skaut.warehousemanager.manager.LoginManager;
 import cz.skaut.warehousemanager.manager.WarehouseManager;
@@ -28,7 +25,7 @@ public class WarehouseApplication extends Application {
         super.onCreate();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-            LeakCanary.install(this);
+            //LeakCanary.install(this);
 
             /*Stetho.initialize(
                     Stetho.newInitializerBuilder(this)

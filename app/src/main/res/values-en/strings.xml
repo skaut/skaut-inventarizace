@@ -27,4 +27,8 @@
     <string name="purchase_price">Purchase price</string>
     <string name="settings">Settings</string>
     <string name="sync_error">Sync error</string>
+    <string name="get_photo_error">Unexpected error while fetching photo</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="never">Never</string>
 </resources>
