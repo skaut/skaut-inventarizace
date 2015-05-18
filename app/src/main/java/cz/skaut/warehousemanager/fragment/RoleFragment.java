@@ -90,14 +90,11 @@ public class RoleFragment extends BaseFragment {
 
                     @Override
                     public void onNext(Object o) {
-                        Timber.d("onnext");
-                        /*getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, WarehouseListFragment.newInstance()).commit();*/
+
                     }
 
                     @Override
                     public void onCompleted() {
-                        //this.onNext(null);
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.container, WarehouseListFragment.newInstance()).commit();
                     }

@@ -5,14 +5,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.skaut.warehousemanager.fragment.LoginFragment;
-import cz.skaut.warehousemanager.fragment.SettingsFragment;
 import cz.skaut.warehousemanager.fragment.WarehouseListFragment;
 import cz.skaut.warehousemanager.helper.C;
 
@@ -46,13 +43,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
@@ -63,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.container, LoginFragment.newInstance())
                         .commit();
                 return true;
-            case R.id.settings:
+            /*case R.id.settings:
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.container, SettingsFragment.newInstance())
                         .commit();
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }

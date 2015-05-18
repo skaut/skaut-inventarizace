@@ -3,7 +3,6 @@ package cz.skaut.warehousemanager.fragment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -31,9 +30,6 @@ public class LoginFragment extends BaseFragment {
 
     @InjectView(R.id.password)
     EditText passwordText;
-
-    @InjectView(R.id.loginButton)
-    Button loginButton;
 
     @InjectView(R.id.progressWheel)
     ProgressWheel progressWheel;
