@@ -109,6 +109,11 @@ public class ItemDetailFragment extends BaseFragment {
                         itemPhoto.setImageBitmap(bitmap);
                         itemPhoto.setVisibility(View.VISIBLE);
                         progressWheel.setVisibility(View.GONE);
+                    }, throwable -> {
+                        Timber.e("Unexpected error while fetching photo: " + throwable.getMessage());
+                        itemPhoto.setVisibility(View.VISIBLE);
+                        progressWheel.setVisibility(View.GONE);
+                        showToast(R.string.get_photo_error);
                     });
         }
     }
@@ -154,6 +159,8 @@ public class ItemDetailFragment extends BaseFragment {
             if (resultCode == Activity.RESULT_OK) {
                 itemPhoto.setVisibility(View.GONE);
                 progressWheel.setVisibility(View.VISIBLE);
+
+                // initiate saving photo
                 itemManager.saveItemPhoto(photoPath, item.getId())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(bitmap -> {

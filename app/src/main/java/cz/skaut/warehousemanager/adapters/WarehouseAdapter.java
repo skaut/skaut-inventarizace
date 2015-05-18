@@ -49,25 +49,4 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
             return warehouseNameText;
         }
     }
-
-    /*private void reorderList() {
-        Map<Long, Warehouse> result = new HashMap<>();
-        List<Warehouse> workingData = new ArrayList<>(data);
-        Timber.d("Start list: " + workingData);
-        for(Iterator<Warehouse> iterator = workingData.iterator(); iterator.hasNext();) {
-            Warehouse w = iterator.next();
-            if(w.getIdParentWarehouse() == 0) {
-                Timber.d("Putting main warehouse to map: " + w.getName());
-                result.put(w.getId(), w);
-                iterator.remove();
-            } else {
-                result.put(w.getIdParentWarehouse(), w);
-                Timber.d("Putting child warehouse to map: " + w.getName());
-                Timber.d("Remaining: " + workingData);
-            }
-            Timber.d("Remaining: " + workingData);
-        }
-
-        Timber.d("Result map: " + result);
-    }*/
 }

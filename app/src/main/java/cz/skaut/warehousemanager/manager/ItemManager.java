@@ -61,11 +61,12 @@ public class ItemManager {
     }
 
     public List<Item> getAllUninventorizedItems(long warehouseId) {
-        //return realm.where(Item.class).equalTo("warehouse.id", warehouseId).equalTo("synced", false).findAllSorted("id");
-        return realm.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
+        // TODO: change this to reflect settings
+        return realm.where(Item.class).equalTo("warehouse.id", warehouseId).equalTo("latestInventory.synced", true).findAllSorted("id");
     }
 
     public Observable<List<Item>> getItems(final long warehouseId) {
+        // return items from database if they are already loaded
         if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
             return getAllItems(warehouseId);
         } else {
@@ -82,11 +83,6 @@ public class ItemManager {
                             Warehouse w = tempRealm.where(Warehouse.class).equalTo("id", i.getIdWarehouse()).findFirst();
                             i.setWarehouse(w);
                             i.setSynced(true);
-
-                                /*// TODO: REMOVE THIS, JUST DEBUGGING FILE UPLOAD
-                                if (i.getId() != 6) {
-                                    i.setSynced(true);
-                                }*/
 
                             tempRealm.copyToRealmOrUpdate(i);
                         }
@@ -172,7 +168,10 @@ public class ItemManager {
             if (!TextUtils.isEmpty(path)) {
                 File file = new File(path);
                 if (!file.exists()) {
-                    subscriber.onError(new IOException("File does not exist"));
+                    // throw only when subscriber is still subscribed
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onError(new IOException("File does not exist"));
+                    }
                     return;
                 }
 
@@ -201,13 +200,20 @@ public class ItemManager {
                 tempRealm.close();
 
                 if (file.delete()) {
-                    subscriber.onNext(scaledBitmap);
-                    subscriber.onCompleted();
+                    // return only when subscriber is still subscribed
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onNext(scaledBitmap);
+                        subscriber.onCompleted();
+                    }
                 } else {
-                    subscriber.onError(new IOException("Failed to delete the file"));
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onError(new IOException("Failed to delete the file"));
+                    }
                 }
             } else {
-                subscriber.onError(new IllegalArgumentException("Path is empty"));
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onError(new IllegalArgumentException("Path is empty"));
+                }
             }
         }).subscribeOn(Schedulers.io());
     }
@@ -215,77 +221,22 @@ public class ItemManager {
     public void updateInventorizeStatus(Set<Item> items) {
         realm.beginTransaction();
         for (Item item : items) {
-            if (item.isValid()) {
-                // remove previous inventories of this item
-                realm.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
+            // remove previous inventories of this item
+            realm.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
 
-                // save new inventory to database
-                Inventory inventory = realm.createObject(Inventory.class);
-                inventory.setItemId(item.getId());
-                inventory.setPerson(prefs.getString(C.USER_PERSON_NAME, ""));
-                inventory.setDateTimestamp(DateTimeUtils.getCurrentTimestamp());
-                inventory.setSynced(false);
+            // save new inventory to database
+            Inventory inventory = realm.createObject(Inventory.class);
+            inventory.setItemId(item.getId());
+            inventory.setPerson(prefs.getString(C.USER_PERSON_NAME, ""));
+            inventory.setDateTimestamp(DateTimeUtils.getCurrentTimestamp());
+            inventory.setSynced(false);
 
-                item.setLatestInventory(inventory);
-            } else {
-                Timber.e(item.getName() + " is not a valid Realm object");
-            }
+            item.setLatestInventory(inventory);
         }
         realm.commitTransaction();
     }
 
     public Observable<List<Object>> synchronize() {
-        /*LoginManager loginManager = WarehouseApplication.getLoginManager();
-        return loginManager.refreshLogin()
-                .flatMap(aVoid -> {
-                    Realm tempRealm = Realm.getInstance(context);
-
-                    RealmResults<Inventory> inventories = tempRealm
-                            .where(Inventory.class)
-                            .equalTo("synced", false)
-                            .findAll();
-
-                    RealmResults<Item> items = tempRealm
-                            .where(Item.class)
-                            .equalTo("synced", false)
-                            .findAll();
-
-                    tempRealm.close();
-
-                    return Observable.merge(
-                            synchronizeInventories(inventories),
-                            synchronizeItems(items)
-                    )
-                            .toList();
-                });*/
-        // strange construct to let me use Realm instance in lambdas
-
-        /*return Observable.defer(() -> {
-            final Realm[] tempRealm = new Realm[1];
-            final LoginManager loginManager = WarehouseApplication.getLoginManager();
-            return loginManager.refreshLogin()
-                    .flatMap(aVoid -> {
-                        Timber.wtf("got here");
-                        tempRealm[0] = Realm.getInstance(context);
-                        RealmResults<Inventory> inventories = tempRealm[0]
-                                .where(Inventory.class)
-                                .equalTo("synced", false)
-                                .findAll();
-
-                        RealmResults<Item> items = tempRealm[0]
-                                .where(Item.class)
-                                .equalTo("synced", false)
-                                .findAll();
-
-                        return Observable.merge(
-                                synchronizeInventories(inventories),
-                                synchronizeItems(items)
-                        )
-                                .toList()
-                                .finallyDo(tempRealm[0]::close);
-                    });
-        }).subscribeOn(Schedulers.io());*/
-
         return Observable.defer(() -> WarehouseApplication.getLoginManager().refreshLogin()
                         .flatMap(o -> Observable.merge(
                                 synchronizeInventories(),
@@ -294,11 +245,6 @@ public class ItemManager {
                         .toList()
         )
                 .subscribeOn(Schedulers.io());
-        /*return Observable.defer(() ->
-                        synchronizeItems()
-                                .flatMap(o -> synchronizeInventories())
-                                .toList()
-        );*/
     }
 
     private Observable<Object> synchronizeItems() {
@@ -309,14 +255,14 @@ public class ItemManager {
                 .equalTo("synced", false)
                 .findAll();
 
-        Timber.wtf("I would sync following items: " + items.size());
+        Timber.d("I would sync following items: " + items.size());
         return Observable.from(items)
                 .flatMap(this::synchronizeItem)
                 .finallyDo(tempRealm::close);
     }
 
     private Observable<Object> synchronizeItem(final Item item) {
-        Timber.wtf("want to sync " + item.getName());
+        Timber.d("want to sync " + item.getName());
         final long itemId = item.getId();
         TempFileInsert request = new TempFileInsert("test.jpg", "jpg", item.getPhoto());
 
@@ -326,7 +272,7 @@ public class ItemManager {
                     tempRealm.beginTransaction();
                     Item tempItem = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
                     tempItem.setSynced(true);
-                    Timber.wtf("got guid YAY: " + tempFileInsertResult.getGuid());
+                    Timber.d("server responded with GUID: " + tempFileInsertResult.getGuid());
                     tempRealm.commitTransaction();
                     tempRealm.close();
                     return Observable.empty();
@@ -341,7 +287,7 @@ public class ItemManager {
                 .equalTo("synced", false)
                 .findAll();
 
-        Timber.wtf("I will sync following inventories: " + inventories);
+        Timber.d("I will sync following inventories: " + inventories);
         return Observable.from(inventories)
                 .flatMap(this::synchronizeInventory)
                 .finallyDo(tempRealm::close);
@@ -359,7 +305,7 @@ public class ItemManager {
                     Inventory tempInventory = tempRealm.where(Inventory.class).equalTo("itemId", itemId).findFirst();
                     tempInventory.setSynced(true);
                     tempInventory.setId(itemInventorizeResult.getId());
-                    Timber.wtf("got ID: " + itemInventorizeResult.getId());
+                    Timber.d("got ID: " + itemInventorizeResult.getId());
                     tempRealm.commitTransaction();
                     tempRealm.close();
                     return Observable.empty();

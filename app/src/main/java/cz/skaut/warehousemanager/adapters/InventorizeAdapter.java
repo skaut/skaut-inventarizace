@@ -37,12 +37,7 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
         super.onBindViewHolder(holder, position);
         final Item item = getItem(position);
         holder.itemNameText.setText(item.getName());
-        holder.inventorizeCheckbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                inventorize(item);
-            }
-        });
+        holder.inventorizeCheckbox.setOnClickListener(view -> inventorize(item));
     }
 
     @Override

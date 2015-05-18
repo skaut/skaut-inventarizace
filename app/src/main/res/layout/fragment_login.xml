@@ -22,7 +22,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/appName"
                 android:textSize="30sp"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:gravity="center"/>
 
             <EditText
                 android:layout_width="match_parent"

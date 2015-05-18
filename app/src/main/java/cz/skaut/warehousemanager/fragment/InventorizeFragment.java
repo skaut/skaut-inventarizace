@@ -61,6 +61,7 @@ public class InventorizeFragment extends BaseFragment {
         itemList.setAdapter(adapter);
         adapter.setData(itemManager.getAllUninventorizedItems(warehouseId));
 
+        // subscribe for barcode events
         scannerView.getBarcodes().subscribe(barcode -> {
             Timber.d("Got code: " + barcode);
             adapter.inventorize(barcode);

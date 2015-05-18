@@ -87,14 +87,14 @@ public class LoginManager {
     private Observable<Object> refreshRole(long oldRoleId, long newRoleId) {
         if (oldRoleId == newRoleId) {
             Timber.d("refreshing, but same role, doing nothing");
-            return Observable.empty();
+            return Observable.just(new Object());
         } else {
             Timber.d("refreshing, switching to new role");
             RoleUpdate request = new RoleUpdate(oldRoleId);
             return SkautApiManager.getUserApi().changeRole(request)
                     .flatMap(roleUpdateResult -> {
                         Timber.d("refreshing, Role update success");
-                        return Observable.empty();
+                        return Observable.just(new Object());
                     });
         }
     }

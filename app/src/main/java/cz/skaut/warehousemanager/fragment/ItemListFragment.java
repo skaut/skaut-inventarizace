@@ -69,12 +69,7 @@ public class ItemListFragment extends BaseFragment {
         ItemManager itemManager = WarehouseApplication.getItemManager();
 
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
-        } else {
-            Timber.wtf("FATAL ERROR: Failed to pass warehouse to fragment");
-            getActivity().getSupportFragmentManager().popBackStack();
-        }
+        warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
 
         setTitle(warehouse.getName());
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name" translatable="false">WarehouseManager</string>
+    <string name="app_name" translatable="false">Skautská Inventarizace</string>
     <string name="login_title">Přihlášení</string>
     <string name="password_hint">Heslo</string>
     <string name="login_user_name">Uživatelské jméno</string>
@@ -32,4 +32,5 @@
     <string name="save">Uložit</string>
     <string name="cancel">Zrušit</string>
     <string name="never">nikdy</string>
+    <string name="get_photo_error">Unexpected error while fetching photo</string>
 </resources>
