@@ -19,6 +19,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 
 import butterknife.InjectView;
 import cz.skaut.warehousemanager.R;
@@ -87,13 +88,13 @@ public class ItemDetailFragment extends BaseFragment {
 
         itemDescription.setText(item.getDescription());
         itemInventoryNumber.setText(item.getInventoryNumber());
-        itemPurchasePrice.setText(item.getPurchasePrice());
+        itemPurchasePrice.setText(formatPrice(item.getPurchasePrice()));
         itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
         Inventory i = item.getLatestInventory();
 
         // item has no inventory yet
         if (i == null) {
-            itemLatestInventory.setText(getString(R.string.never));
+            itemLatestInventory.setText(R.string.never);
         } else {
             long timestamp = i.getDateTimestamp();
             itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
@@ -117,6 +118,19 @@ public class ItemDetailFragment extends BaseFragment {
                     });
         }
     }
+
+    private String formatPrice(String price) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        nf.setMaximumFractionDigits(0);
+
+        if (TextUtils.isEmpty(price)) {
+            return "";
+        } else {
+            float priceFloat = Float.valueOf(price);
+            return nf.format(priceFloat);
+        }
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
