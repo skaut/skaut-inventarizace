@@ -31,3 +31,6 @@ local.properties
 # Android studio project files
 .idea
 *.iml
+
+# Performace captures
+captures/

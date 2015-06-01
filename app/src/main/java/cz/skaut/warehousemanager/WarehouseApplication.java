@@ -44,9 +44,9 @@ public class WarehouseApplication extends Application {
         //preferences.edit().putBoolean(C.USER_IS_LOGGED, false).commit();
         //preferences.edit().putBoolean(C.ITEMS_LOADED, false).commit();
 
-        loginManager = new LoginManager(context);
+        /*loginManager = new LoginManager(context);
         warehouseManager = new WarehouseManager(context);
-        itemManager = new ItemManager(context);
+        itemManager = new ItemManager(context);*/
     }
 
     public static Context getContext() {

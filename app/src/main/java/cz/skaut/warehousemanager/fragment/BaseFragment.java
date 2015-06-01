@@ -6,7 +6,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,14 +65,8 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    protected void showToast(String text) {
-        if (!TextUtils.isEmpty(text)) {
-            Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
-        }
-    }
-
     protected void showToast(@StringRes int resId) {
-        showToast(getString(resId));
+        Toast.makeText(getActivity(), resId, Toast.LENGTH_LONG).show();
     }
 
     protected void setTitle(String text) {
@@ -81,8 +74,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void setTitle(@StringRes int resId) {
-        setTitle(getString(resId));
+        getActivity().setTitle(resId);
     }
-
-    // protected void
 }

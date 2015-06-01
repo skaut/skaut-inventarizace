@@ -14,13 +14,13 @@ public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> exte
     protected final Context context;
     protected final LayoutInflater inflater;
     protected List<T> data;
-    protected int lastPosition = -1;
+    private int lastPosition = -1;
 
     public RecyclerViewAdapter(Context context, List<T> data) {
+        setHasStableIds(true);
         this.context = context.getApplicationContext();
         this.data = data;
         inflater = LayoutInflater.from(this.context);
-        setHasStableIds(true);
     }
 
     public void setData(List<T> data) {
