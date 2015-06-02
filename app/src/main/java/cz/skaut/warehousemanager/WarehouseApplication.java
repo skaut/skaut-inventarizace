@@ -26,14 +26,6 @@ public class WarehouseApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
             //LeakCanary.install(this);
-
-            /*Stetho.initialize(
-                    Stetho.newInitializerBuilder(this)
-                            .enableDumpapp(
-                                    Stetho.defaultDumperPluginsProvider(this))
-                            .enableWebKitInspector(
-                                    RealmInspectorModulesProvider.builder(this).build())
-                            .build());*/
         }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -43,10 +35,6 @@ public class WarehouseApplication extends Application {
         //Realm.deleteRealmFile(this);
         //preferences.edit().putBoolean(C.USER_IS_LOGGED, false).commit();
         //preferences.edit().putBoolean(C.ITEMS_LOADED, false).commit();
-
-        /*loginManager = new LoginManager(context);
-        warehouseManager = new WarehouseManager(context);
-        itemManager = new ItemManager(context);*/
     }
 
     public static Context getContext() {

@@ -134,7 +134,6 @@ public class ItemDetailFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.item_detail_menu, menu);
         inflater.inflate(R.menu.main_menu, menu);
     }
 

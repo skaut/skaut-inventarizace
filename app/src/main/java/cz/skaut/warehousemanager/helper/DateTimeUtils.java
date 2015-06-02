@@ -15,6 +15,10 @@ public class DateTimeUtils {
 
     public static final Locale locale = new Locale("cs", "CZ");
 
+    private DateTimeUtils() {
+        // no instances
+    }
+
     public static Long getTimestampFromDate(String input, String inputFormat) {
         DateFormat dateFormat = new SimpleDateFormat(inputFormat, locale);
         Date date;

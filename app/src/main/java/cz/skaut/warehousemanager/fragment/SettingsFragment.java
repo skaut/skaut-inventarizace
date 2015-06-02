@@ -83,7 +83,7 @@ public class SettingsFragment extends BaseFragment {
     }
 
     private void updatePreference(long newPeriod) {
-        prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).commit();
+        prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).apply();
         period = newPeriod;
     }
 
