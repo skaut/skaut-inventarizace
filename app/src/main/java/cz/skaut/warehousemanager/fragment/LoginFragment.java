@@ -1,15 +1,15 @@
 package cz.skaut.warehousemanager.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -35,7 +35,13 @@ public class LoginFragment extends BaseFragment {
     ProgressWheel progressWheel;
 
     @InjectView(R.id.loginBox)
-    RelativeLayout loginBox;
+    LinearLayout loginBox;
+
+    @InjectView(R.id.userNameLayout)
+    TextInputLayout userNameLayout;
+
+    @InjectView(R.id.passwordLayout)
+    TextInputLayout passwordLayout;
 
     private RxLoader2<String, String, List<Role>> loginLoader;
 
@@ -57,7 +63,7 @@ public class LoginFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         hideUpButton();
-        setTitle(getString(R.string.login_title));
+        setTitle(R.string.login_title);
 
         String prefUserName = WarehouseApplication.getPrefs().getString(C.USER_NAME, "");
         if (!TextUtils.isEmpty(prefUserName)) {
@@ -76,7 +82,7 @@ public class LoginFragment extends BaseFragment {
                     public void onNext(List<Role> roles) {
                         Timber.d("got roles: " + roles);
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, RoleFragment.newInstance(new ArrayList<>(roles)))
+                                .replace(R.id.container, RoleFragment.newInstance(roles))
                                 .commit();
                     }
 
@@ -88,11 +94,10 @@ public class LoginFragment extends BaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        // TODO: handle errors
                         Timber.e(e.toString());
-                        Toast.makeText(getActivity(), getString(R.string.login_failed), Toast.LENGTH_LONG).show();
                         loginBox.setVisibility(View.VISIBLE);
                         progressWheel.setVisibility(View.GONE);
+                        Snackbar.make(view, R.string.login_failed, Snackbar.LENGTH_LONG).show();
                     }
                 });
 
@@ -100,9 +105,19 @@ public class LoginFragment extends BaseFragment {
 
     @OnClick(R.id.loginButton)
     public void login() {
-        if (TextUtils.isEmpty(userNameText.getText()) || TextUtils.isEmpty(passwordText.getText())) {
-            Toast.makeText(getActivity(), getString(R.string.login_info_needed), Toast.LENGTH_SHORT).show();
+        boolean isNameEmpty = TextUtils.isEmpty(userNameText.getText());
+        boolean isPasswordEmpty = TextUtils.isEmpty(passwordText.getText());
+
+        if (isNameEmpty || isPasswordEmpty) {
+            if (isNameEmpty) {
+                userNameLayout.setError(getString(R.string.error_name_empty));
+            }
+            if (isPasswordEmpty) {
+                passwordLayout.setError(getString(R.string.error_password_empty));
+            }
         } else {
+            userNameLayout.setErrorEnabled(false);
+            passwordLayout.setErrorEnabled(false);
             loginLoader.restart(userNameText.getText().toString(), passwordText.getText().toString());
         }
     }

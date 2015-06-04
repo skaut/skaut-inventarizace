@@ -41,10 +41,10 @@ public class RoleFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    public static RoleFragment newInstance(ArrayList<Role> roles) {
+    public static RoleFragment newInstance(List<Role> roles) {
         RoleFragment fragment = new RoleFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(C.ROLES_INDEX, roles);
+        args.putParcelableArrayList(C.ROLES_INDEX, new ArrayList<>(roles));
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,7 +54,7 @@ public class RoleFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         hideUpButton();
-        setTitle(getString(R.string.choose_role));
+        setTitle(R.string.choose_role);
 
         Bundle bundle = this.getArguments();
         List<Role> roleList = bundle.getParcelableArrayList(C.ROLES_INDEX);

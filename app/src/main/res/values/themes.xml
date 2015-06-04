@@ -9,6 +9,8 @@
         <item name="android:textColorPrimary">@color/primary_text</item>
 
         <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
+
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 </resources>

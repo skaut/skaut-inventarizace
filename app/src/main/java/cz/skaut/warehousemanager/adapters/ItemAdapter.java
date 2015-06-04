@@ -19,7 +19,7 @@ public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewH
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = inflater.inflate(R.layout.list_item_item, parent, false);
+        View v = inflater.inflate(R.layout.list_item, parent, false);
         return new ItemViewHolder(v);
     }
 
@@ -36,7 +36,7 @@ public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewH
     }
 
     class ItemViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.itemListItem)
+        @InjectView(R.id.listItem)
         public TextView itemNameText;
 
         public ItemViewHolder(View base) {

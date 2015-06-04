@@ -2,10 +2,12 @@ package cz.skaut.warehousemanager.fragment;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.adapters.WarehouseAdapter;
@@ -44,6 +47,9 @@ public class WarehouseListFragment extends BaseFragment {
     @InjectView(R.id.progressWheel)
     ProgressWheel progressWheel;
 
+    @InjectView(R.id.syncButton)
+    FloatingActionButton syncButton;
+
     private WarehouseAdapter adapter;
 
     private RxLoader<List<Object>> syncLoader;
@@ -69,7 +75,7 @@ public class WarehouseListFragment extends BaseFragment {
         warehouseList.setLayoutManager(new LinearLayoutManager(getActivity()));
         warehouseList.setHasFixedSize(true);
         warehouseList.setEmptyView(noWarehouseText);
-        warehouseList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+        warehouseList.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(getActivity(), R.drawable.divider), false, false));
 
         WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
         ItemManager itemManager = WarehouseApplication.getItemManager();
@@ -77,7 +83,7 @@ public class WarehouseListFragment extends BaseFragment {
         adapter = new WarehouseAdapter(getActivity(), Collections.<Warehouse>emptyList());
         warehouseList.setAdapter(adapter);
 
-        setTitle(getString(R.string.warehouse_list));
+        setTitle(R.string.warehouse_list);
         setSubtitle(prefs.getString(C.USER_ROLE, ""));
 
         ItemClickSupport clickSupport = ItemClickSupport.addTo(warehouseList);
@@ -111,6 +117,10 @@ public class WarehouseListFragment extends BaseFragment {
                     public void onCompleted() {
                         progressWheel.setVisibility(View.GONE);
                         warehouseList.setVisibility(View.VISIBLE);
+
+                        if (prefs.getBoolean(C.SYNC_NEEDED, false)) {
+                            syncButton.setVisibility(View.VISIBLE);
+                        }
                     }
 
                     @Override
@@ -147,26 +157,19 @@ public class WarehouseListFragment extends BaseFragment {
                         e.printStackTrace();
                         progressWheel.setVisibility(View.GONE);
                         warehouseList.setVisibility(View.VISIBLE);
-                        showToast(R.string.sync_error);
+                        Snackbar.make(view, R.string.sync_error, Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
-            inflater.inflate(R.menu.warehouse_list_menu, menu);
-        }
         inflater.inflate(R.menu.main_menu, menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_synchronize) {
-            syncLoader.restart();
-        }
-        return super.onOptionsItemSelected(item);
+    @OnClick(R.id.syncButton)
+    void sync() {
+        syncLoader.restart();
     }
 
     @Override

@@ -19,7 +19,7 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 
     @Override
     public WarehouseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.list_item_warehouse, parent, false);
+        View view = inflater.inflate(R.layout.list_item, parent, false);
         return new WarehouseViewHolder(view);
     }
 
@@ -37,7 +37,7 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 
     public class WarehouseViewHolder extends RecyclerViewHolder {
 
-        @InjectView(R.id.warehouseListItem)
+        @InjectView(R.id.listItem)
         TextView warehouseNameText;
 
         public WarehouseViewHolder(View view) {

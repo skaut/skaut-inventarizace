@@ -5,19 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Path;
-import org.simpleframework.xml.Root;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cz.skaut.warehousemanager.entity.Role;
 import cz.skaut.warehousemanager.helper.C;
+import cz.skaut.warehousemanager.soap.LoginResponse;
 import cz.skaut.warehousemanager.soap.RoleAll;
 import cz.skaut.warehousemanager.soap.RoleUpdate;
 import cz.skaut.warehousemanager.soap.SkautApiManager;
@@ -40,23 +34,27 @@ public class LoginManager {
         Map<String, String> params = prepareLoginData(username, password);
 
         return SkautApiManager.getLoginApi().login(C.APPLICATION_ID, params)
-                .flatMap((String response) -> {
-                    prefs.edit().putString(C.USER_NAME, username).putString(C.USER_PASSWORD, password).commit();
-                    LoginResponse loginResponse = parseUserData(response);
-                    prefs.edit().putString(C.USER_TOKEN, loginResponse.getToken())
-                            .putLong(C.USER_ROLE_ID, loginResponse.getRole())
-                            .putLong(C.USER_UNIT_ID, loginResponse.getUnit())
-                            .putBoolean(C.USER_IS_LOGGED, true)
+                .flatMap((LoginResponse response) -> {
+                    Timber.d("Token: " + response.getToken());
+                    Timber.d("Role: " + response.getRole());
+                    Timber.d("Unit ID: " + response.getUnit());
+
+                    prefs.edit().putString(C.USER_NAME, username)
+                            .putString(C.USER_PASSWORD, password)
+                            .putString(C.USER_TOKEN, response.getToken())
+                            .putLong(C.USER_ROLE_ID, response.getRole())
+                            .putLong(C.USER_UNIT_ID, response.getUnit())
                             .putBoolean(C.WAREHOUSES_LOADED, false)
                             .putBoolean(C.ITEMS_LOADED, false)
-                            .commit();
+                            .putBoolean(C.SYNC_NEEDED, false)
+                            .apply();
                     Timber.d("Login successful");
                     return userApi.getUserDetail(new UserDetail());
                 })
                 .flatMap((UserDetailResult userDetailResult) -> {
                     prefs.edit().putString(C.USER_ID, userDetailResult.getUserID())
                             .putString(C.USER_PERSON_ID, userDetailResult.getPersonID())
-                            .putString(C.USER_PERSON_NAME, userDetailResult.getPersonName()).commit();
+                            .putString(C.USER_PERSON_NAME, userDetailResult.getPersonName()).apply();
                     Timber.d("User ID: " + userDetailResult.getUserID());
                     Timber.d("Person ID: " + userDetailResult.getPersonID());
                     Timber.d("Person name: " + userDetailResult.getPersonName());
@@ -74,13 +72,12 @@ public class LoginManager {
         long oldRoleId = prefs.getLong(C.USER_ROLE_ID, 0);
 
         return SkautApiManager.getLoginApi().login(C.APPLICATION_ID, params)
-                .flatMap((String response) -> {
-                    LoginResponse loginResponse = parseUserData(response);
+                .flatMap((LoginResponse response) -> {
+                    //LoginResponse loginResponse = parseUserData(response);
 
-                    prefs.edit().putString(C.USER_TOKEN, loginResponse.getToken())
-                            .commit();
+                    prefs.edit().putString(C.USER_TOKEN, response.getToken()).apply();
 
-                    return refreshRole(oldRoleId, loginResponse.getRole());
+                    return refreshRole(oldRoleId, response.getRole());
                 });
     }
 
@@ -103,21 +100,23 @@ public class LoginManager {
         long currentRoleId = prefs.getLong(C.USER_ROLE_ID, 0);
         if (role.getId() == currentRoleId) {
             Timber.d("same role, doing nothing");
+            prefs.edit().putBoolean(C.USER_IS_LOGGED, true).apply();
             return Observable.empty();
         } else {
             RoleUpdate request = new RoleUpdate(role.getId());
             return SkautApiManager.getUserApi().changeRole(request)
                     .flatMap(roleUpdateResult -> {
                         Timber.d("Role update success");
-                        prefs.edit().putLong(C.USER_UNIT_ID, roleUpdateResult.getUnitID())
-                                .putString(C.USER_ROLE, role.getUnitName()).commit();
+                        prefs.edit().putBoolean(C.USER_IS_LOGGED, true)
+                                .putLong(C.USER_UNIT_ID, roleUpdateResult.getUnitID())
+                                .putString(C.USER_ROLE, role.getUnitName()).apply();
                         return Observable.empty();
                     });
         }
     }
 
     public void logout() {
-        prefs.edit().putBoolean(C.USER_IS_LOGGED, false).commit();
+        prefs.edit().putBoolean(C.USER_IS_LOGGED, false).apply();
     }
 
     private Map<String, String> prepareLoginData(String username, String password) {
@@ -130,53 +129,5 @@ public class LoginManager {
         params.put("__VIEWSTATEGENERATOR", C.LOGINDATA_2);
 
         return params;
-    }
-
-    private LoginResponse parseUserData(String data) {
-
-        Serializer ser = new Persister();
-        LoginResponse response;
-        try {
-            response = ser.read(LoginResponse.class, data);
-        } catch (Exception e) {
-            throw new RuntimeException("Login deserialization failed", e);
-        }
-
-        Timber.d("Token: " + response.getToken());
-        Timber.d("Role: " + response.getRole());
-        Timber.d("Unit ID: " + response.getUnit());
-
-        return response;
-    }
-
-    @Root(name = "html", strict = false)
-    private static class LoginResponse {
-
-        @Path("body")
-        @ElementList(name = "form", entry = "input")
-        private List<Input> data;
-
-        public String getToken() {
-            return data.get(0).getValue();
-        }
-
-        public long getRole() {
-            return Long.valueOf(data.get(1).getValue());
-        }
-
-        public long getUnit() {
-            return Long.valueOf(data.get(2).getValue());
-        }
-    }
-
-    @Root(strict = false)
-    private static class Input {
-
-        @Attribute
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
     }
 }

@@ -4,7 +4,7 @@
     <string name="app_name" translatable="false">Skautská Inventarizace</string>
     <string name="login_title">Přihlášení</string>
     <string name="password_hint">Heslo</string>
-    <string name="login_user_name">Uživatelské jméno</string>
+    <string name="username_hint">Uživatelské jméno</string>
     <string name="login">Přihlásit</string>
     <string name="no_warehouses">Žádné sklady</string>
     <string name="no_items">Žádné položky</string>
@@ -12,7 +12,6 @@
     <string name="login_failed">Nepodařilo se přihlásit</string>
     <string name="warehouse_list">Seznam skladů</string>
     <string name="action_inventorize">Inventarizovat</string>
-    <string name="login_info_needed">Musíte vyplnit jméno a heslo</string>
     <string name="settings">Nastavení</string>
     <string name="logout">Odhlásit</string>
     <string name="choose_role">Vybrat roli</string>
@@ -33,4 +32,6 @@
     <string name="cancel">Zrušit</string>
     <string name="never">nikdy</string>
     <string name="get_photo_error">Neočekávaná chyba</string>
+    <string name="error.name_empty">Vyplňte jméno</string>
+    <string name="error.password_empty">Vyplňte heslo</string>
 </resources>

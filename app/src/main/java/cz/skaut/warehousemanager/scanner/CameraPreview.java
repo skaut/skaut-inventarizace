@@ -82,7 +82,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         stopCameraPreview();
     }
 
-    public void showCameraPreview() {
+    private void showCameraPreview() {
         if (mCamera != null) {
             try {
                 mPreviewing = true;
@@ -123,7 +123,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     };
 
-    public void safeAutoFocus() {
+    private void safeAutoFocus() {
         try {
             mCamera.autoFocus(autoFocusCB);
         } catch (RuntimeException e) {
@@ -135,7 +135,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     // Mimic continuous auto-focusing
-    final Camera.AutoFocusCallback autoFocusCB = (success, camera) -> scheduleAutoFocus();
+    private final Camera.AutoFocusCallback autoFocusCB = (success, camera) -> scheduleAutoFocus();
 
     private void scheduleAutoFocus() {
         mAutoFocusHandler.postDelayed(doAutoFocus, 1000);

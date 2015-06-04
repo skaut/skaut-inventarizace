@@ -2,7 +2,7 @@
 <resources>
     <string name="login_failed">Login failed</string>
     <string name="login">Login</string>
-    <string name="login_user_name">Username</string>
+    <string name="username_hint">Username</string>
     <string name="no_items">No items</string>
     <string name="password_hint">Password</string>
     <string name="no_warehouses">No warehouses</string>

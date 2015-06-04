@@ -1,64 +1,77 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity$LoginFragment">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    tools:context=".MainActivity$LoginFragment"
+    android:gravity="center_vertical">
 
-    <RelativeLayout
-        android:layout_below="@id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/activity_horizontal_margin">
+    <LinearLayout
+        android:id="@+id/loginBox"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/appName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/loginBox">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:text="@string/app_name"
+            android:textSize="26sp" />
 
-            <TextView
-                android:text="@string/app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/appName"
-                android:textSize="30sp"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"/>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/userNameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appName"
+            android:layout_marginTop="0dp">
 
             <EditText
+                android:id="@+id/userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/login_user_name"
-                android:id="@+id/userName"
-                android:padding="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/appName"
-                android:inputType="text|textNoSuggestions" />
+                android:hint="@string/username_hint"
+                android:inputType="text|textNoSuggestions"
+                android:paddingTop="2dp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/passwordLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userNameLayout"
+            android:layout_marginTop="10dp">
 
             <EditText
+                android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password_hint"
-                android:id="@+id/password"
-                android:padding="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/userName"
-                android:inputType="textPassword|textNoSuggestions" />
+                android:inputType="textPassword|textNoSuggestions"
+                android:paddingTop="2dp" />
+        </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/password"
-                android:text="@string/login"
-                android:textSize="15sp"
-                android:id="@+id/loginButton" />
-        </RelativeLayout>
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/passwordLayout"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="@string/login"
+            android:textSize="15sp" />
+    </LinearLayout>
 
-        <include
-            android:id="@+id/progressWheel"
-            android:visibility="gone"
-            layout="@layout/progress_wheel" />
-    </RelativeLayout>
-</RelativeLayout>
+    <include
+        android:id="@+id/progressWheel"
+        layout="@layout/progress_wheel"
+        android:visibility="gone" />
+</LinearLayout>

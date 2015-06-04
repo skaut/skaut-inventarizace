@@ -2,10 +2,10 @@ package cz.skaut.warehousemanager.fragment;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.adapters.ItemAdapter;
@@ -42,6 +43,9 @@ public class ItemListFragment extends BaseFragment {
 
     @InjectView(R.id.progressWheel)
     ProgressWheel progressWheel;
+
+    @InjectView(R.id.inventorizeButton)
+    FloatingActionButton inventorizeButton;
 
     private ItemAdapter adapter;
 
@@ -104,15 +108,15 @@ public class ItemListFragment extends BaseFragment {
                     @Override
                     public void onNext(List<Item> items) {
                         adapter.setData(items);
+                        if(!items.isEmpty()) {
+                            inventorizeButton.setVisibility(View.VISIBLE);
+                        }
                     }
 
                     @Override
                     public void onCompleted() {
                         progressWheel.setVisibility(View.GONE);
                         itemList.setVisibility(View.VISIBLE);
-
-                        // show inventorize option
-                        getActivity().supportInvalidateOptionsMenu();
                     }
 
                     @Override
@@ -129,23 +133,15 @@ public class ItemListFragment extends BaseFragment {
         return R.layout.fragment_item_list;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (prefs.getBoolean(C.ITEMS_LOADED, false) && adapter.getItemCount() > 0) {
-            inflater.inflate(R.menu.item_list_menu, menu);
-        }
-        inflater.inflate(R.menu.main_menu, menu);
+    @OnClick(R.id.inventorizeButton)
+    void inventorize() {
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
+                .addToBackStack(null).commit();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.warehouse_inventorize) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
-                    .addToBackStack(null).commit();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
     }
 }

@@ -97,7 +97,7 @@ public class ItemManager {
                     .flatMap(this::getInventory)
                     .flatMap(this::getPhoto)
                     .toList()
-                    .doOnCompleted(() -> prefs.edit().putBoolean(C.ITEMS_LOADED, true).commit())
+                    .doOnCompleted(() -> prefs.edit().putBoolean(C.ITEMS_LOADED, true).apply())
                     .observeOn(AndroidSchedulers.mainThread()) // switch to main thread and fetch items
                     .flatMap(itemIds -> getAllItems(warehouseId));
         }
@@ -135,9 +135,7 @@ public class ItemManager {
         ItemPhoto request = new ItemPhoto(itemId);
         return SkautApiManager.getWarehouseApi().getItemPhoto(request)
                 .map((ItemPhotoResult itemPhotoResult) -> {
-                    if (itemPhotoResult.getPhotoData() == null) {
-                        Timber.d("no photo data");
-                    } else {
+                    if (itemPhotoResult.getPhotoData() != null) {
                         Realm tempRealm = Realm.getInstance(context);
                         tempRealm.beginTransaction();
                         Item item = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
@@ -153,7 +151,6 @@ public class ItemManager {
         return Observable.create((Subscriber<? super Bitmap> subscriber) -> {
             if (!subscriber.isUnsubscribed()) {
                 Timber.d("Photo data len: " + itemPhotoData.length());
-
                 byte[] decodedString = Base64.decode(itemPhotoData, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
@@ -199,6 +196,8 @@ public class ItemManager {
                 tempRealm.commitTransaction();
                 tempRealm.close();
 
+                prefs.edit().putBoolean(C.SYNC_NEEDED, true).apply();
+
                 if (file.delete()) {
                     // return only when subscriber is still subscribed
                     if (!subscriber.isUnsubscribed()) {
@@ -218,7 +217,7 @@ public class ItemManager {
         }).subscribeOn(Schedulers.io());
     }
 
-    public void updateInventorizeStatus(Set<Item> items) {
+    public void updateInventorizeStatus(final Set<Item> items) {
         realm.beginTransaction();
         for (Item item : items) {
             // remove previous inventories of this item
@@ -234,17 +233,28 @@ public class ItemManager {
             item.setLatestInventory(inventory);
         }
         realm.commitTransaction();
+
+        if (!items.isEmpty()) {
+            prefs.edit().putBoolean(C.SYNC_NEEDED, true).apply();
+        }
     }
 
     public Observable<List<Object>> synchronize() {
-        return Observable.defer(() -> WarehouseApplication.getLoginManager().refreshLogin()
+        /*return Observable.defer(() -> WarehouseApplication.getLoginManager().refreshLogin()
                         .flatMap(o -> Observable.merge(
                                 synchronizeInventories(),
                                 synchronizeItems()
                         ))
                         .toList()
         )
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.io());*/
+        return WarehouseApplication.getLoginManager().refreshLogin()
+                .flatMap(o -> Observable.merge(
+                        synchronizeInventories(),
+                        synchronizeItems()
+                ))
+                .toList()
+                .doOnCompleted(() -> prefs.edit().putBoolean(C.SYNC_NEEDED, false).apply());
     }
 
     private Observable<Object> synchronizeItems() {

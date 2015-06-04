@@ -7,10 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.entity.Inventory;
@@ -110,11 +111,11 @@ public class ItemDetailFragment extends BaseFragment {
                         itemPhoto.setImageBitmap(bitmap);
                         itemPhoto.setVisibility(View.VISIBLE);
                         progressWheel.setVisibility(View.GONE);
-                    }, throwable -> {
-                        Timber.e("Unexpected error while fetching photo: " + throwable.getMessage());
+                    }, e -> {
+                        Timber.e(e, "Failed to load photo");
                         itemPhoto.setVisibility(View.VISIBLE);
                         progressWheel.setVisibility(View.GONE);
-                        showToast(R.string.get_photo_error);
+                        Snackbar.make(progressWheel, R.string.get_photo_error, Snackbar.LENGTH_LONG).show();
                     });
         }
     }
@@ -137,33 +138,28 @@ public class ItemDetailFragment extends BaseFragment {
         inflater.inflate(R.menu.main_menu, menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.item_photo) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    @OnClick(R.id.photoFab)
+    void takePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            // check if the phone can handle camera intent
-            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException e) {
-                    Timber.e(e.getMessage());
-                    showToast(R.string.camera_file_error);
-                }
-
-                if (photoFile != null) {
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                    startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
-                }
-            } else {
-                Timber.e("error dispatching camera intent");
-                showToast(R.string.camera_error);
+        // check if the phone can handle camera intent
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                Timber.e(e.getMessage());
+                Snackbar.make(progressWheel, R.string.camera_file_error, Snackbar.LENGTH_LONG).show();
             }
-            return true;
+
+            if (photoFile != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
+            }
+        } else {
+            Timber.e("Error dispatching camera intent");
+            Snackbar.make(progressWheel, R.string.camera_error, Snackbar.LENGTH_LONG).show();
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -180,12 +176,11 @@ public class ItemDetailFragment extends BaseFragment {
                             itemPhoto.setImageBitmap(bitmap);
                             itemPhoto.setVisibility(View.VISIBLE);
                             progressWheel.setVisibility(View.GONE);
-                        }, throwable -> {
-                            Timber.e(throwable.getMessage());
-                            throwable.printStackTrace();
-                            showToast(R.string.photo_save_error);
+                        }, e -> {
+                            Timber.e(e, "Failed to save photo");
                             itemPhoto.setVisibility(View.VISIBLE);
                             progressWheel.setVisibility(View.GONE);
+                            Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
                         });
             }
         } else {

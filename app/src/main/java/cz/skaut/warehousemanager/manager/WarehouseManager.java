@@ -57,7 +57,7 @@ public class WarehouseManager {
                         }
                         backgroundRealm.commitTransaction();
                         backgroundRealm.close();
-                        prefs.edit().putBoolean(C.WAREHOUSES_LOADED, true).commit();
+                        prefs.edit().putBoolean(C.WAREHOUSES_LOADED, true).apply();
                     })
                     .observeOn(AndroidSchedulers.mainThread()) // move to main thread to fetch results
                     .flatMap(warehouseAllResult -> getAllWarehousesSorted());

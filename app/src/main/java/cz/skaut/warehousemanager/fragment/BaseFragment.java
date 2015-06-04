@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -63,10 +62,6 @@ public abstract class BaseFragment extends Fragment {
         if (actionBar != null) {
             actionBar.setSubtitle(text);
         }
-    }
-
-    protected void showToast(@StringRes int resId) {
-        Toast.makeText(getActivity(), resId, Toast.LENGTH_LONG).show();
     }
 
     protected void setTitle(String text) {

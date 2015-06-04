@@ -43,6 +43,7 @@ public class C {
 
     public static final String WAREHOUSES_LOADED = "WarehousesLoaded";
     public static final String ITEMS_LOADED = "ItemsLoaded";
+    public static final String SYNC_NEEDED = "SyncNeeded";
 
     public static final String USER_NAME = "UserName";
     public static final String USER_PASSWORD = "UserPassword";
