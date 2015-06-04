@@ -8,7 +8,6 @@ import java.util.Map;
 
 import cz.skaut.warehousemanager.helper.C;
 import retrofit.RestAdapter;
-import retrofit.client.OkClient;
 import retrofit.converter.SimpleXMLConverter;
 import retrofit.http.Body;
 import retrofit.http.FieldMap;
@@ -67,33 +66,17 @@ public class SkautApiManager {
         @Headers(C.REQUEST_FORM_HEADER)
         @POST("/Login/")
         @FormUrlEncoded
-        Observable<String> login(@Query("appid") String appId,
+        Observable<LoginResponse> login(@Query("appid") String appId,
                                  @FieldMap Map<String, String> params);
     }
 
-    private static final OkClient OK_CLIENT;
-
-    static {
-        //OkHttpClient client = new OkHttpClient();
-        //client.networkInterceptors().add(new StethoInterceptor());
-        OK_CLIENT = new OkClient();
-    }
-
-    private static final RestAdapter REST_LOGIN_ADAPTER = new RestAdapter.Builder()
-            .setEndpoint(C.BASE_URL)
-            .setClient(OK_CLIENT)
-            .setConverter(new StringConverter())
-                    //.setLogLevel(RestAdapter.LogLevel.FULL)
-            .build();
-
-    private static final SkautLoginApi LOGIN_API = REST_LOGIN_ADAPTER.create(SkautLoginApi.class);
-
     private static final RestAdapter REST_ADAPTER = new RestAdapter.Builder()
             .setEndpoint(C.BASE_URL)
-            .setClient(OK_CLIENT)
             .setConverter(new SimpleXMLConverter(new Persister(new AnnotationStrategy())))
                     //.setLogLevel(RestAdapter.LogLevel.FULL)
             .build();
+
+    private static final SkautLoginApi LOGIN_API = REST_ADAPTER.create(SkautLoginApi.class);
 
     private static final SkautWarehouseApi WAREHOUSE_API = REST_ADAPTER.create(SkautWarehouseApi.class);
 

@@ -25,7 +25,6 @@ public class WarehouseApplication extends Application {
         super.onCreate();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-            //LeakCanary.install(this);
         }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -33,8 +32,8 @@ public class WarehouseApplication extends Application {
 
         // debug options
         //Realm.deleteRealmFile(this);
-        //preferences.edit().putBoolean(C.USER_IS_LOGGED, false).commit();
-        //preferences.edit().putBoolean(C.ITEMS_LOADED, false).commit();
+        //preferences.edit().putBoolean(C.USER_IS_LOGGED, true).apply();
+        //preferences.edit().putBoolean(C.ITEMS_LOADED, false).apply();
     }
 
     public static Context getContext() {

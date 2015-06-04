@@ -48,6 +48,4 @@ dependencies {
     compile 'me.dm7.barcodescanner:zbar:1.7.2'
     compile 'io.realm:realm-android:0.80.3'
     compile 'me.tatarka.rxloader:rxloader:1.1.0'
-
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
 }
