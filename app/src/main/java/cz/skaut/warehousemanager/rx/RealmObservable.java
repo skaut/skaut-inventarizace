@@ -7,7 +7,6 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import rx.Observable;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 public final class RealmObservable {
@@ -15,20 +14,11 @@ public final class RealmObservable {
         // no instances
     }
 
-    public static <T> Observable<T> workReturn(Context context, final Func1<Realm, T> function) {
-        return Observable.create(new OnSubscribeRealmWorkReturn<T>(context) {
+    public static <T> Observable<T> work(Context context, final Func1<Realm, T> function) {
+        return Observable.create(new OnSubscribeRealmWork<T>(context) {
             @Override
             public T work(Realm realm) {
                 return function.call(realm);
-            }
-        });
-    }
-
-    public static <T extends RealmObject> Observable<T> work(Context context, final Action1<Realm> function) {
-        return Observable.create(new OnSubscribeRealmWork<T>(context) {
-            @Override
-            public void work(Realm realm) {
-                function.call(realm);
             }
         });
     }

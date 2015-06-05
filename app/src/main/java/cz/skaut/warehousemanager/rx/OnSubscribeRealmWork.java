@@ -8,10 +8,10 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
-public abstract class OnSubscribeRealmWorkReturn<T> implements Observable.OnSubscribe<T> {
+public abstract class OnSubscribeRealmWork<T> implements Observable.OnSubscribe<T> {
     private Context context;
 
-    public OnSubscribeRealmWorkReturn(Context context) {
+    public OnSubscribeRealmWork(Context context) {
         this.context = context.getApplicationContext();
     }
 
