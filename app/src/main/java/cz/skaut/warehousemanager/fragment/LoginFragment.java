@@ -94,7 +94,7 @@ public class LoginFragment extends BaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e.toString());
+                        Timber.e(e, "Failed to login");
                         loginBox.setVisibility(View.VISIBLE);
                         progressWheel.setVisibility(View.GONE);
                         Snackbar.make(view, R.string.login_failed, Snackbar.LENGTH_LONG).show();

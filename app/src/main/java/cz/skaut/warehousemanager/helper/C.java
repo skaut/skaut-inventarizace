@@ -14,6 +14,7 @@ import cz.skaut.warehousemanager.BuildConfig;
 public class C {
 
     private C() {
+        // no instances
     }
 
     private static final String BASE_URL_DEV = "http://test-is.skaut.cz/";

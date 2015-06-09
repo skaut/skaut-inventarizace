@@ -126,7 +126,7 @@ public class WarehouseListFragment extends BaseFragment {
                     @Override
                     public void onError(Throwable e) {
                         // TODO: handle errors
-                        Timber.e("ERROR: " + e);
+                        Timber.e(e, "Error while fetching warehouses");
                     }
                 }).start();
 
@@ -153,8 +153,7 @@ public class WarehouseListFragment extends BaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e.getMessage());
-                        e.printStackTrace();
+                        Timber.e(e, "Sync error");
                         progressWheel.setVisibility(View.GONE);
                         warehouseList.setVisibility(View.VISIBLE);
                         Snackbar.make(view, R.string.sync_error, Snackbar.LENGTH_LONG).show();

@@ -58,7 +58,7 @@ public class ItemDetailFragment extends BaseFragment {
     @InjectView(R.id.progressWheel)
     ProgressWheel progressWheel;
 
-    private String photoPath;
+    private File file = null;
 
     private ItemManager itemManager;
 
@@ -144,16 +144,16 @@ public class ItemDetailFragment extends BaseFragment {
 
         // check if the phone can handle camera intent
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            File photoFile = null;
             try {
-                photoFile = createImageFile();
+                File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                file = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
             } catch (IOException e) {
-                Timber.e(e.getMessage());
+                Timber.e(e, "Failed to create file");
                 Snackbar.make(progressWheel, R.string.camera_file_error, Snackbar.LENGTH_LONG).show();
             }
 
-            if (photoFile != null) {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            if (file != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
             }
         } else {
@@ -170,7 +170,7 @@ public class ItemDetailFragment extends BaseFragment {
                 progressWheel.setVisibility(View.VISIBLE);
 
                 // initiate saving photo
-                itemManager.saveItemPhoto(photoPath, item.getId())
+                itemManager.saveItemPhoto(file, item.getId())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(bitmap -> {
                             itemPhoto.setImageBitmap(bitmap);
@@ -181,18 +181,18 @@ public class ItemDetailFragment extends BaseFragment {
                             itemPhoto.setVisibility(View.VISIBLE);
                             progressWheel.setVisibility(View.GONE);
                             Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
+                            if (!file.delete()) {
+                                Timber.e("Failed to delete file");
+                            }
                         });
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                if (!file.delete()) {
+                    Timber.e("Failed to delete file");
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    private File createImageFile() throws IOException {
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
-        photoPath = image.getAbsolutePath();
-        return image;
     }
 
     @Override
