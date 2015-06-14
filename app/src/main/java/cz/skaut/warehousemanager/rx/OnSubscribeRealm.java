@@ -10,7 +10,7 @@ import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 public abstract class OnSubscribeRealm<T extends RealmObject> implements Observable.OnSubscribe<T> {
-    private Context context;
+    private final Context context;
 
     public OnSubscribeRealm(Context context) {
         this.context = context.getApplicationContext();

@@ -21,7 +21,6 @@
     <string name="latest_inventory">Last inventory</string>
     <string name="logout">Logout</string>
     <string name="login_title">Login</string>
-    <string name="login_info_needed">You need to fill username and password</string>
     <string name="photo_save_error">Unable to save photo</string>
     <string name="purchase_date">Purchase date</string>
     <string name="purchase_price">Purchase price</string>
