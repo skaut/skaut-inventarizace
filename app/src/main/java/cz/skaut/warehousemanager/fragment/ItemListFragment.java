@@ -74,14 +74,19 @@ public class ItemListFragment extends BaseFragment {
 
         Bundle bundle = this.getArguments();
         warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
+        if(warehouse == null) {
+            throw new AssertionError("ItemListFragment created without valid warehouse");
+        }
 
         setTitle(warehouse.getName());
 
+        // configure RecyclerView
         itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
         itemList.setHasFixedSize(true);
         itemList.setEmptyView(noItemText);
         itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
+        // configure adapter
         adapter = new ItemAdapter(getActivity(), Collections.<Item>emptyList());
         itemList.setAdapter(adapter);
 

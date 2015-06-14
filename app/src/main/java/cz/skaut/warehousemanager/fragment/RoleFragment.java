@@ -58,9 +58,13 @@ public class RoleFragment extends BaseFragment {
 
         Bundle bundle = this.getArguments();
         List<Role> roleList = bundle.getParcelableArrayList(C.ROLES_INDEX);
+        if (roleList == null) {
+            throw new AssertionError("RoleFragment created without list of roles");
+        }
 
         LoginManager loginManager = WarehouseApplication.getLoginManager();
 
+        // configure adapter
         ArrayAdapter<Role> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, roleList);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         roleSpinner.setAdapter(adapter);
@@ -113,7 +117,7 @@ public class RoleFragment extends BaseFragment {
     public void selectRole() {
         Role selectedRole = (Role) roleSpinner.getSelectedItem();
 
-        if(selectedRole != null) {
+        if (selectedRole != null) {
             roleLoader.restart(selectedRole);
         }
     }

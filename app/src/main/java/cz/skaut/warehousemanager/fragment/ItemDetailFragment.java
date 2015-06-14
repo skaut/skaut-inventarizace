@@ -82,6 +82,9 @@ public class ItemDetailFragment extends BaseFragment {
 
         Bundle bundle = this.getArguments();
         item = itemManager.getItem(bundle.getLong(C.ITEM_INDEX));
+        if (item == null) {
+            throw new AssertionError("ItemDetailFragment created without valid item");
+        }
 
         setHasOptionsMenu(true);
 
