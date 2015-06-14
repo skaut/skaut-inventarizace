@@ -72,6 +72,7 @@ public class WarehouseListFragment extends BaseFragment {
         hideUpButton();
         setHasOptionsMenu(true);
 
+        // configure RecyclerView
         warehouseList.setLayoutManager(new LinearLayoutManager(getActivity()));
         warehouseList.setHasFixedSize(true);
         warehouseList.setEmptyView(noWarehouseText);
@@ -80,6 +81,7 @@ public class WarehouseListFragment extends BaseFragment {
         WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
         ItemManager itemManager = WarehouseApplication.getItemManager();
 
+        // configure adapter
         adapter = new WarehouseAdapter(getActivity(), Collections.<Warehouse>emptyList());
         warehouseList.setAdapter(adapter);
 
@@ -97,6 +99,7 @@ public class WarehouseListFragment extends BaseFragment {
 
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 
+        // create warehouse loader and starts loading
         loaderManager.create(
                 WAREHOUSE_TAG,
                 warehouseManager.getWarehouses(),

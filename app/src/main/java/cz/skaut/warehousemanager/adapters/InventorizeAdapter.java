@@ -22,6 +22,7 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
 
     public InventorizeAdapter(Context context, List<Item> data) {
         // create new ArrayList to break RealmList connection
+        // TODO: try to remove this
         super(context, new ArrayList<>(data));
         inventorizedItems = new HashSet<>();
     }

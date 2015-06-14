@@ -91,22 +91,23 @@ public class ItemDetailFragment extends BaseFragment {
         itemInventoryNumber.setText(item.getInventoryNumber());
         itemPurchasePrice.setText(formatPrice(item.getPurchasePrice()));
         itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
-        Inventory i = item.getLatestInventory();
+        Inventory latestInventory = item.getLatestInventory();
 
         // item has no inventory yet
-        if (i == null) {
+        if (latestInventory == null) {
             itemLatestInventory.setText(R.string.never);
         } else {
-            long timestamp = i.getDateTimestamp();
+            long timestamp = latestInventory.getDateTimestamp();
             itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
         }
 
         String photoData = item.getPhoto();
         if (!TextUtils.isEmpty(photoData)) {
+            // decode photo to Bitmap in background thread
             itemPhoto.setVisibility(View.GONE);
             progressWheel.setVisibility(View.VISIBLE);
-            itemManager.getItemPhoto(item.getPhoto())
-                    .observeOn(AndroidSchedulers.mainThread())
+            itemManager.decodePhoto(item.getPhoto())
+                    .observeOn(AndroidSchedulers.mainThread()) // TODO: check if it works without this
                     .subscribe(bitmap -> {
                         itemPhoto.setImageBitmap(bitmap);
                         itemPhoto.setVisibility(View.VISIBLE);
@@ -120,6 +121,11 @@ public class ItemDetailFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Formats purchase price
+     * @param price price to be formatted
+     * @return formatted price
+     */
     private String formatPrice(String price) {
         NumberFormat nf = NumberFormat.getCurrencyInstance();
         nf.setMaximumFractionDigits(0);
@@ -181,11 +187,14 @@ public class ItemDetailFragment extends BaseFragment {
                             itemPhoto.setVisibility(View.VISIBLE);
                             progressWheel.setVisibility(View.GONE);
                             Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
+
+                            // saving photo failed, delete temporary file
                             if (!file.delete()) {
                                 Timber.e("Failed to delete file");
                             }
                         });
             } else if (resultCode == Activity.RESULT_CANCELED) {
+                // no photo taken, delete temporary file
                 if (!file.delete()) {
                     Timber.e("Failed to delete file");
                 }

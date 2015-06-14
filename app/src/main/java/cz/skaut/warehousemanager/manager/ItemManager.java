@@ -45,20 +45,44 @@ public class ItemManager {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    /**
+     * Gets item from database
+     *
+     * @param id id of item
+     * @return Item
+     */
     public Item getItem(long id) {
         return realmUI.where(Item.class).equalTo("id", id).findFirst();
     }
 
+    /**
+     * Gets all items from selected warehouse
+     *
+     * @param warehouseId warehouse to get items from
+     * @return list of items in the warehouse
+     */
     private Observable<List<Item>> getAllItems(long warehouseId) {
         List<Item> items = realmUI.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
         return Observable.just(items);
     }
 
+    /**
+     * Gets all uninventorized items from selected warehouse
+     *
+     * @param warehouseId warehouse to get uninventorized items from
+     * @return list of uninventorized items in the warehouse
+     */
     public List<Item> getAllUninventorizedItems(long warehouseId) {
         // TODO: change this to reflect settings
         return realmUI.where(Item.class).equalTo("warehouse.id", warehouseId).equalTo("latestInventory.synced", true).findAllSorted("id");
     }
 
+    /**
+     * Fetches all items from remote server if needed, then returns list of items from selected warehouse
+     *
+     * @param warehouseId warehouse to get items from
+     * @return
+     */
     public Observable<List<Item>> getItems(final long warehouseId) {
         // return items from database if they are already loaded
         if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
@@ -90,6 +114,12 @@ public class ItemManager {
         }
     }
 
+    /**
+     * Fetches list of all inventories for selected item, then saves the last one to database
+     *
+     * @param itemId item to fetch inventories for
+     * @return id of item to allow chaining
+     */
     private Observable<Long> getInventory(final long itemId) {
         ItemInventory request = new ItemInventory(itemId);
         return SkautApiManager.getWarehouseApi().getItemInventory(request)
@@ -112,6 +142,12 @@ public class ItemManager {
                 }));
     }
 
+    /**
+     * Fetches photo of selected item and saves it to database
+     *
+     * @param itemId item to fetch photo for
+     * @return id of item to allow chaining
+     */
     private Observable<Long> getPhoto(final long itemId) {
         ItemPhoto request = new ItemPhoto(itemId);
         return SkautApiManager.getWarehouseApi().getItemPhoto(request)
@@ -124,19 +160,33 @@ public class ItemManager {
                 }));
     }
 
-    public Observable<Bitmap> getItemPhoto(final String itemPhotoData) {
+    /**
+     * Decoded base64 photo data into Bitmap
+     *
+     * @param itemPhotoData photo data to be decoded
+     * @return decoded Bitmap
+     */
+    public Observable<Bitmap> decodePhoto(final String itemPhotoData) {
         return Observable.create((Subscriber<? super Bitmap> subscriber) -> {
-            if (!subscriber.isUnsubscribed()) {
-                Timber.d("Photo data len: " + itemPhotoData.length());
-                byte[] decodedString = Base64.decode(itemPhotoData, Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            Timber.d("Photo data len: " + itemPhotoData.length());
+            byte[] decodedString = Base64.decode(itemPhotoData, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            // send Bitmap only if subscription is still valid
+            if (!subscriber.isUnsubscribed()) {
                 subscriber.onNext(bitmap);
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }
 
+    /**
+     * Scales down photo, encodes it to base64 and saves it to database
+     *
+     * @param file   source file
+     * @param itemId item to set photo to
+     * @return Observable of Bitmap
+     */
     public Observable<Bitmap> saveItemPhoto(final File file, final long itemId) {
         return RealmObservable.work(context, realm -> {
             if (!file.exists()) {
@@ -146,6 +196,7 @@ public class ItemManager {
             // load photo from file
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
+            // calculate target aspect ratio
             float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
             int width = Math.round(C.PHOTO_HEIGHT * aspectRatio);
 
@@ -174,6 +225,11 @@ public class ItemManager {
                 .subscribeOn(Schedulers.io());
     }
 
+    /**
+     * Adds new inventory to selected items
+     *
+     * @param items items to inventorize
+     */
     public void updateInventorizeStatus(final Set<Item> items) {
         realmUI.beginTransaction();
         for (Item item : items) {
@@ -226,6 +282,12 @@ public class ItemManager {
                 .flatMap(this::synchronizeItem);
     }
 
+    /**
+     * Uploads item photo to remote server
+     *
+     * @param item item to be synchronized
+     * @return object indicating the method succeeded
+     */
     private Observable<Object> synchronizeItem(final Item item) {
         Timber.d("Syncing item" + item);
         final long itemId = item.getId();
@@ -240,6 +302,11 @@ public class ItemManager {
                 }));
     }
 
+    /**
+     * Gets list of new inventories from database and synchronizes them with remote server.
+     *
+     * @return object indication the method succeeded
+     */
     private Observable<Object> synchronizeInventories() {
         return RealmObservable.results(context, realm ->
                 realm
@@ -250,6 +317,12 @@ public class ItemManager {
                 .flatMap(this::synchronizeInventory);
     }
 
+    /**
+     * Sends new inventory to remote server.
+     *
+     * @param inventory inventory to be synchronized
+     * @return object indicating the method succeeded
+     */
     private Observable<Object> synchronizeInventory(final Inventory inventory) {
         Timber.d("Syncing " + inventory);
 

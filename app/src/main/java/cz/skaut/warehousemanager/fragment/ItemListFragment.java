@@ -95,6 +95,7 @@ public class ItemListFragment extends BaseFragment {
 
         final RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 
+        // create item loader
         loaderManager.create(
                 itemManager.getItems(warehouse.getId()),
                 new RxLoaderObserver<List<Item>>() {

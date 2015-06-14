@@ -75,6 +75,7 @@ public class LoginFragment extends BaseFragment {
             passwordText.setText(prefUserPassword);
         }
 
+        // create login loader
         loginLoader = RxLoaderManagerCompat.get(this).create(
                 (username, password) -> WarehouseApplication.getLoginManager().login(username, password),
                 new RxLoaderObserver<List<Role>>() {

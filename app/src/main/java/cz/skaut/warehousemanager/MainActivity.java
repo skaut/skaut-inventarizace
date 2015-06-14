@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.skaut.warehousemanager.fragment.LoginFragment;
+import cz.skaut.warehousemanager.fragment.SettingsFragment;
 import cz.skaut.warehousemanager.fragment.WarehouseListFragment;
 import cz.skaut.warehousemanager.helper.C;
 
@@ -53,12 +54,12 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.container, LoginFragment.newInstance())
                         .commit();
                 return true;
-            /*case R.id.settings:
+            case R.id.settings:
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.container, SettingsFragment.newInstance())
                         .commit();
-                return true;*/
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

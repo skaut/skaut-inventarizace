@@ -28,6 +28,14 @@ public class LoginManager {
         prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
 
+    /**
+     * Performs login, gets user data and gets list of available roles.
+     * The list is filtered by ALLOWED_ROLES constant found in C.java.
+     *
+     * @param username Username
+     * @param password Password
+     * @return Observable filtered list of available roles
+     */
     public Observable<List<Role>> login(final String username, final String password) {
         final SkautApiManager.SkautUserApi userApi = SkautApiManager.getUserApi();
 
@@ -65,6 +73,10 @@ public class LoginManager {
                 .toList();
     }
 
+    /**
+     * Refreshes user login session by loggin in and setting role to previous one if needed
+     * @return object indicating the method succeeded
+     */
     public Observable<Object> refreshLogin() {
         Map<String, String> params = prepareLoginData(prefs.getString(C.USER_NAME, ""), prefs.getString(C.USER_PASSWORD, ""));
 
@@ -73,29 +85,41 @@ public class LoginManager {
 
         return SkautApiManager.getLoginApi().login(C.APPLICATION_ID, params)
                 .flatMap((LoginResponse response) -> {
-                    //LoginResponse loginResponse = parseUserData(response);
-
                     prefs.edit().putString(C.USER_TOKEN, response.getToken()).apply();
 
-                    return refreshRole(oldRoleId, response.getRole());
+                    return updateRole(oldRoleId, response.getRole());
                 });
     }
 
-    private Observable<Object> refreshRole(long oldRoleId, long newRoleId) {
+    /**
+     * Updates user's role to oldRoleId.
+     * Does nothing if old and new role IDs are the same.
+     *
+     * @param oldRoleId ID of role user logged in with
+     * @param newRoleId ID of current user's role
+     * @return empty object indicating the method succeeded
+     */
+    private Observable<Object> updateRole(long oldRoleId, long newRoleId) {
         if (oldRoleId == newRoleId) {
-            Timber.d("refreshing, but same role, doing nothing");
+            Timber.d("Same role, doing nothing");
             return Observable.just(new Object());
         } else {
-            Timber.d("refreshing, switching to new role");
+            Timber.d("Switching to new role");
             RoleUpdate request = new RoleUpdate(oldRoleId);
             return SkautApiManager.getUserApi().changeRole(request)
                     .flatMap(roleUpdateResult -> {
-                        Timber.d("refreshing, Role update success");
+                        Timber.d("Role update success");
                         return Observable.just(new Object());
                     });
         }
     }
 
+    /**
+     * Switches current user's role
+     *
+     * @param role target role
+     * @return empty object indicating the method succeeded
+     */
     public Observable<Object> chooseRole(Role role) {
         long currentRoleId = prefs.getLong(C.USER_ROLE_ID, 0);
         if (role.getId() == currentRoleId) {
@@ -115,10 +139,20 @@ public class LoginManager {
         }
     }
 
+    /**
+     * Logs user out by settings prefs flag
+     */
     public void logout() {
         prefs.edit().putBoolean(C.USER_IS_LOGGED, false).apply();
     }
 
+    /**
+     * Prepares form data needed for user login
+     *
+     * @param username username
+     * @param password password
+     * @return map containing user login data
+     */
     private Map<String, String> prepareLoginData(String username, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("ctl00$txtUserName", username);

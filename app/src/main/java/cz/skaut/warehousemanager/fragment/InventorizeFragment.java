@@ -53,10 +53,12 @@ public class InventorizeFragment extends BaseFragment {
 
         itemManager = WarehouseApplication.getItemManager();
 
+        // configure RecyclerView
         itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
         itemList.setHasFixedSize(true);
         itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
+        // configure adapter
         adapter = new InventorizeAdapter(getActivity(), Collections.<Item>emptyList());
         itemList.setAdapter(adapter);
         adapter.setData(itemManager.getAllUninventorizedItems(warehouseId));
@@ -78,6 +80,9 @@ public class InventorizeFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         scannerView.stopCamera();
+
+        // send inventorized items to manager
+        // TODO: check what happens if onPause is called twice on the same fragment!!
         itemManager.updateInventorizeStatus(adapter.getInventorizedItems());
     }
 
