@@ -52,7 +52,7 @@ public class WarehouseListFragment extends BaseFragment {
 
     private WarehouseAdapter adapter;
 
-    private RxLoader<List<Object>> syncLoader;
+    private RxLoader<Object> syncLoader;
 
     private static final String SYNC_TAG = "SYNC_LOADER";
     private static final String WAREHOUSE_TAG = "WAREHOUSE_LOADER";
@@ -130,10 +130,11 @@ public class WarehouseListFragment extends BaseFragment {
                     }
                 }).start();
 
+        // create sync loader
         syncLoader = loaderManager.create(
                 SYNC_TAG,
                 itemManager.synchronize(),
-                new RxLoaderObserver<List<Object>>() {
+                new RxLoaderObserver<Object>() {
                     @Override
                     public void onStarted() {
                         progressWheel.setVisibility(View.VISIBLE);
@@ -142,13 +143,14 @@ public class WarehouseListFragment extends BaseFragment {
                     }
 
                     @Override
-                    public void onNext(List<Object> value) {
+                    public void onNext(Object value) {
                     }
 
                     @Override
                     public void onCompleted() {
                         progressWheel.setVisibility(View.GONE);
                         warehouseList.setVisibility(View.VISIBLE);
+                        syncButton.setVisibility(View.GONE);
                     }
 
                     @Override

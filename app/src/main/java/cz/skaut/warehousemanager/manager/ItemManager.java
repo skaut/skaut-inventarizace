@@ -196,16 +196,26 @@ public class ItemManager {
         }
     }
 
-    public Observable<List<Object>> synchronize() {
+    /**
+     * Synchronizes saved data with remote server.
+     * Refreshes login session first, then synchronizes items and inventories simultaneously.
+     *
+     * @return object indicating the method succeeded
+     */
+    public Observable<Object> synchronize() {
         return WarehouseApplication.getLoginManager().refreshLogin()
                 .flatMap(o -> Observable.merge(
                         synchronizeInventories(),
                         synchronizeItems()
                 ))
-                .toList()
                 .doOnCompleted(() -> prefs.edit().putBoolean(C.SYNC_NEEDED, false).apply());
     }
 
+    /**
+     * Gets list of items with new photo from database and synchronizes them with remote server.
+     *
+     * @return object indication the method succeeded
+     */
     private Observable<Object> synchronizeItems() {
         return RealmObservable.results(context, realm ->
                 realm
