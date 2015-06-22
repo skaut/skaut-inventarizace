@@ -74,7 +74,7 @@ public class LoginManager {
     }
 
     /**
-     * Refreshes user login session by loggin in and setting role to previous one if needed
+     * Refreshes user login session by logging in and setting role to previous one if needed
      * @return object indicating the method succeeded
      */
     public Observable<Object> refreshLogin() {

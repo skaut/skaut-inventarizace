@@ -21,9 +21,6 @@ public class Role implements Parcelable {
     @Element(name = "Role")
     private String roleName;
 
-    public Role() {
-    }
-
     public long getId() {
         return id;
     }

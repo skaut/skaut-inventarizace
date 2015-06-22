@@ -81,7 +81,7 @@ public class ItemManager {
      * Fetches all items from remote server if needed, then returns list of items from selected warehouse
      *
      * @param warehouseId warehouse to get items from
-     * @return
+     * @return list of items from selected warehouse
      */
     public Observable<List<Item>> getItems(final long warehouseId) {
         // return items from database if they are already loaded

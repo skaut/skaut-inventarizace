@@ -33,8 +33,10 @@ public class MainActivity extends AppCompatActivity {
             boolean prefIsLogged = WarehouseApplication.getPrefs().getBoolean(C.USER_IS_LOGGED, false);
             Fragment fragment;
             if (prefIsLogged) {
+                // user is logged in, show warehouse list
                 fragment = WarehouseListFragment.newInstance();
             } else {
+                // login needed, show login screen
                 fragment = LoginFragment.newInstance();
             }
             getSupportFragmentManager().beginTransaction()

@@ -110,7 +110,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mCamera.setOneShotPreviewCallback(null);
                 mCamera.stopPreview();
             } catch (Exception e) {
-                Timber.e(e, e.getMessage());
+                Timber.e(e, "Stop camera failed");
             }
         }
     }

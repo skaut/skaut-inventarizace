@@ -71,13 +71,12 @@ public class SettingsFragment extends BaseFragment {
 
     private AlertDialog createDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Období inventarizace")
-                .setMessage("Počet dní mezi jednotlivými inventarizacemi")
+        builder.setTitle(R.string.inventory_timeframe)
+                .setMessage(R.string.inventory_days)
                 .setView(input)
                 .setPositiveButton(R.string.save, null) // listener is set later to enable not dismissing the dialog
                 .setNegativeButton(R.string.cancel, (dialogInterface, position) -> {
                     input.setText(String.valueOf(period));
-                    Timber.d("canceled");
                 });
         return builder.create();
     }
