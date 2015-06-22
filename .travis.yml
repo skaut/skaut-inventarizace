@@ -12,4 +12,5 @@ notifications:
   email: false
 
 script:
-    - gradle build assembleDebug
+    - gradle clean prepareDebugDependencies
+    - gradle testDebug
