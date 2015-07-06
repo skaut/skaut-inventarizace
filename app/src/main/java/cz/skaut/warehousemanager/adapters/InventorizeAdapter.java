@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Item;
 import timber.log.Timber;
@@ -89,10 +89,10 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
     }
 
     class InventoryViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.itemListInventorize)
+        @Bind(R.id.itemListInventorize)
         TextView itemNameText;
 
-        @InjectView(R.id.inventorizeCheckbox)
+        @Bind(R.id.inventorizeCheckbox)
         CheckBox inventorizeCheckbox;
 
         public InventoryViewHolder(View base) {

@@ -10,7 +10,7 @@ public abstract class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public RecyclerViewHolder(View view) {
         super(view);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
     }
 
     public abstract View getAnimatedView();

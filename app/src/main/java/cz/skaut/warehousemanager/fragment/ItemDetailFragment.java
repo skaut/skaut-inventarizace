@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -37,25 +37,25 @@ public class ItemDetailFragment extends BaseFragment {
 
     private Item item;
 
-    @InjectView(R.id.itemPhoto)
+    @Bind(R.id.itemPhoto)
     ImageView itemPhoto;
 
-    @InjectView(R.id.itemDescription)
+    @Bind(R.id.itemDescription)
     TextView itemDescription;
 
-    @InjectView(R.id.itemInventoryNumber)
+    @Bind(R.id.itemInventoryNumber)
     TextView itemInventoryNumber;
 
-    @InjectView(R.id.itemPurchasePrice)
+    @Bind(R.id.itemPurchasePrice)
     TextView itemPurchasePrice;
 
-    @InjectView(R.id.itemPurchaseDate)
+    @Bind(R.id.itemPurchaseDate)
     TextView itemPurchaseDate;
 
-    @InjectView(R.id.itemLatestInventory)
+    @Bind(R.id.itemLatestInventory)
     TextView itemLatestInventory;
 
-    @InjectView(R.id.progressWheel)
+    @Bind(R.id.progressWheel)
     ProgressWheel progressWheel;
 
     private File file = null;

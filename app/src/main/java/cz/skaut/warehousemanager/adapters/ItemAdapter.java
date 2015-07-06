@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Item;
 
@@ -36,7 +36,7 @@ public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewH
     }
 
     class ItemViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.listItem)
+        @Bind(R.id.listItem)
         public TextView itemNameText;
 
         public ItemViewHolder(View base) {

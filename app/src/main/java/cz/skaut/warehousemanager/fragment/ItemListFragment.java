@@ -16,7 +16,7 @@ import org.lucasr.twowayview.ItemClickSupport;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -35,16 +35,16 @@ import timber.log.Timber;
 
 public class ItemListFragment extends BaseFragment {
 
-    @InjectView(R.id.itemList)
+    @Bind(R.id.itemList)
     EmptyRecyclerView itemList;
 
-    @InjectView(R.id.noItemText)
+    @Bind(R.id.noItemText)
     TextView noItemText;
 
-    @InjectView(R.id.progressWheel)
+    @Bind(R.id.progressWheel)
     ProgressWheel progressWheel;
 
-    @InjectView(R.id.inventorizeButton)
+    @Bind(R.id.inventorizeButton)
     FloatingActionButton inventorizeButton;
 
     private ItemAdapter adapter;

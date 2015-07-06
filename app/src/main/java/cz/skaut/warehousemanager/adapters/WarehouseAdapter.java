@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Warehouse;
 
@@ -37,7 +37,7 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 
     public class WarehouseViewHolder extends RecyclerViewHolder {
 
-        @InjectView(R.id.listItem)
+        @Bind(R.id.listItem)
         TextView warehouseNameText;
 
         public WarehouseViewHolder(View view) {

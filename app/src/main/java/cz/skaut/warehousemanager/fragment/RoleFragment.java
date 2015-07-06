@@ -12,7 +12,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -26,13 +26,13 @@ import timber.log.Timber;
 
 public class RoleFragment extends BaseFragment {
 
-    @InjectView(R.id.roleSpinner)
+    @Bind(R.id.roleSpinner)
     Spinner roleSpinner;
 
-    @InjectView(R.id.progressWheel)
+    @Bind(R.id.progressWheel)
     ProgressWheel progressWheel;
 
-    @InjectView(R.id.roleBox)
+    @Bind(R.id.roleBox)
     RelativeLayout roleBox;
 
     private RxLoader1<Role, Object> roleLoader;

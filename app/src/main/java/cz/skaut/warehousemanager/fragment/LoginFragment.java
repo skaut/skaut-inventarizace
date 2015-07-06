@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -12,7 +13,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -25,23 +26,26 @@ import timber.log.Timber;
 
 public class LoginFragment extends BaseFragment {
 
-    @InjectView(R.id.userName)
+    @Bind(R.id.userName)
     EditText userNameText;
 
-    @InjectView(R.id.password)
+    @Bind(R.id.password)
     EditText passwordText;
 
-    @InjectView(R.id.progressWheel)
+    @Bind(R.id.progressWheel)
     ProgressWheel progressWheel;
 
-    @InjectView(R.id.loginBox)
+    @Bind(R.id.loginBox)
     LinearLayout loginBox;
 
-    @InjectView(R.id.userNameLayout)
+    @Bind(R.id.userNameLayout)
     TextInputLayout userNameLayout;
 
-    @InjectView(R.id.passwordLayout)
+    @Bind(R.id.passwordLayout)
     TextInputLayout passwordLayout;
+
+    @Bind(R.id.loginButton)
+    Button loginButton;
 
     private RxLoader2<String, String, List<Role>> loginLoader;
 
