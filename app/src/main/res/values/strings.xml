@@ -35,4 +35,5 @@
     <string name="error.name_empty">Vyplňte jméno</string>
     <string name="error.password_empty">Vyplňte heslo</string>
     <string name="inventory_days">Počet dní mezi jednotlivými inventarizacemi</string>
+    <string name="login_no_roles">Chyba - žádné vhodné role</string>
 </resources>

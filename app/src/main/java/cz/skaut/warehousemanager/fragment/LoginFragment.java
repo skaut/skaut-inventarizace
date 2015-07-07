@@ -86,9 +86,15 @@ public class LoginFragment extends BaseFragment {
                     @Override
                     public void onNext(List<Role> roles) {
                         Timber.d("got roles: " + roles);
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, RoleFragment.newInstance(roles))
-                                .commit();
+                        if (roles.size() == 0) {
+                            loginBox.setVisibility(View.VISIBLE);
+                            progressWheel.setVisibility(View.GONE);
+                            Snackbar.make(view, R.string.login_no_roles, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.container, RoleFragment.newInstance(roles))
+                                    .commit();
+                        }
                     }
 
                     @Override
