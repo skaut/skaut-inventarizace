@@ -17,77 +17,76 @@ import timber.log.Timber;
 
 public class SettingsFragment extends BaseFragment {
 
-    @Bind(R.id.settingsTimeframe)
-    TextView timeFrameText;
+	@Bind(R.id.settingsTimeframe)
+	TextView timeFrameText;
 
-    @Bind(R.id.settingsTimeframeLayout)
-    LinearLayout timeFrameLayout;
+	@Bind(R.id.settingsTimeframeLayout)
+	LinearLayout timeFrameLayout;
 
-    private AlertDialog dialog;
+	private AlertDialog dialog;
 
-    private EditText input;
+	private EditText input;
 
-    private long period;
+	private long period;
 
-    public static SettingsFragment newInstance() {
-        return new SettingsFragment();
-    }
+	public static SettingsFragment newInstance() {
+		return new SettingsFragment();
+	}
 
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
+	public SettingsFragment() {
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-        showUpButton();
-        setTitle(R.string.settings);
-        setSubtitle("");
+		showUpButton();
+		setTitle(R.string.settings);
+		setSubtitle("");
 
-        Timber.d("OnViewCreated");
+		Timber.d("OnViewCreated");
 
-        period = prefs.getLong(C.INVENTORIZE_PERIOD_DAYS, 0);
-        timeFrameText.setText(String.valueOf(period));
+		period = prefs.getLong(C.INVENTORIZE_PERIOD_DAYS, 0);
+		timeFrameText.setText(String.valueOf(period));
 
-        input = new EditText(getActivity());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setText(String.valueOf(period));
+		input = new EditText(getActivity());
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
+		input.setText(String.valueOf(period));
 
-        dialog = createDialog();
-    }
+		dialog = createDialog();
+	}
 
-    @OnClick(R.id.settingsTimeframeLayout)
-    void showDialog() {
-        dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            if (input.getText().length() > 0) {
-                updatePreference(Long.valueOf(input.getText().toString()));
-                timeFrameText.setText(input.getText().toString());
-                dialog.dismiss();
-            }
-        });
-    }
+	@OnClick(R.id.settingsTimeframeLayout) void showDialog() {
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+			if (input.getText().length() > 0) {
+				updatePreference(Long.valueOf(input.getText().toString()));
+				timeFrameText.setText(input.getText().toString());
+				dialog.dismiss();
+			}
+		});
+	}
 
-    private AlertDialog createDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.inventory_timeframe)
-                .setMessage(R.string.inventory_days)
-                .setView(input)
-                .setPositiveButton(R.string.save, null) // listener is set later to enable not dismissing the dialog
-                .setNegativeButton(R.string.cancel, (dialogInterface, position) -> {
-                    input.setText(String.valueOf(period));
-                });
-        return builder.create();
-    }
+	private AlertDialog createDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle(R.string.inventory_timeframe)
+				.setMessage(R.string.inventory_days)
+				.setView(input)
+				.setPositiveButton(R.string.save, null) // listener is set later to enable not dismissing the dialog
+				.setNegativeButton(R.string.cancel, (dialogInterface, position) -> {
+					input.setText(String.valueOf(period));
+				});
+		return builder.create();
+	}
 
-    private void updatePreference(long newPeriod) {
-        prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).apply();
-        period = newPeriod;
-    }
+	private void updatePreference(long newPeriod) {
+		prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).apply();
+		period = newPeriod;
+	}
 
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_settings;
-    }
+	@Override
+	protected int getFragmentLayout() {
+		return R.layout.fragment_settings;
+	}
 }

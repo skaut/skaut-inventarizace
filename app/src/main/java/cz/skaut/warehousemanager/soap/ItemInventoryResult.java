@@ -11,27 +11,27 @@ import cz.skaut.warehousemanager.entity.Inventory;
 @Root(name = "soap:Envelope", strict = false)
 public class ItemInventoryResult {
 
-    @Path("soap:Body/WarehouseItemInventoryAllResponse")
-    @ElementList(name = "WarehouseItemInventoryAllResult", entry = "WarehouseItemInventoryAllOutput", required = false)
-    private List<Inventory> inventoryList;
+	@Path("soap:Body/WarehouseItemInventoryAllResponse")
+	@ElementList(name = "WarehouseItemInventoryAllResult", entry = "WarehouseItemInventoryAllOutput", required = false)
+	private List<Inventory> inventoryList;
 
-    public Inventory getLatestInventory() {
-        if (inventoryList == null || inventoryList.isEmpty()) {
-            return null;
-        }
-        Inventory latestInventory = inventoryList.get(0);
-        for (Inventory i : inventoryList) {
-            if (i.getId() > latestInventory.getId()) {
-                latestInventory = i;
-            }
-        }
-        return latestInventory;
-    }
+	public Inventory getLatestInventory() {
+		if (inventoryList == null || inventoryList.isEmpty()) {
+			return null;
+		}
+		Inventory latestInventory = inventoryList.get(0);
+		for (Inventory i : inventoryList) {
+			if (i.getId() > latestInventory.getId()) {
+				latestInventory = i;
+			}
+		}
+		return latestInventory;
+	}
 
-    @Override
-    public String toString() {
-        return "ItemInventoryResult{" +
-                "inventoryList=" + inventoryList +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "ItemInventoryResult{" +
+				"inventoryList=" + inventoryList +
+				'}';
+	}
 }

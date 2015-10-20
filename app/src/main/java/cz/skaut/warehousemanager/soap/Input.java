@@ -6,10 +6,10 @@ import org.simpleframework.xml.Root;
 @Root(strict = false)
 public class Input {
 
-    @Attribute
-    private String value;
+	@Attribute
+	private String value;
 
-    public String getValue() {
-        return value;
-    }
+	public String getValue() {
+		return value;
+	}
 }

@@ -10,16 +10,16 @@ import cz.skaut.warehousemanager.helper.C;
 @Root(name = "soap:Envelope")
 public class LoginRefresh extends BaseRequest {
 
-    @Path("soap:Body/LoginUpdateRefresh/loginUpdateRefreshInput")
-    @Element(name = "ID_Application")
-    private String applicationID;
+	@Path("soap:Body/LoginUpdateRefresh/loginUpdateRefreshInput")
+	@Element(name = "ID_Application")
+	private String applicationID;
 
-    @Path("soap:Body/LoginUpdateRefresh/loginUpdateRefreshInput")
-    @Element(name = "ID")
-    private String id;
+	@Path("soap:Body/LoginUpdateRefresh/loginUpdateRefreshInput")
+	@Element(name = "ID")
+	private String id;
 
-    public LoginRefresh() {
-        applicationID = C.APPLICATION_ID;
-        id = WarehouseApplication.getPrefs().getString(C.USER_TOKEN, "");
-    }
+	public LoginRefresh() {
+		applicationID = C.APPLICATION_ID;
+		id = WarehouseApplication.getPrefs().getString(C.USER_TOKEN, "");
+	}
 }

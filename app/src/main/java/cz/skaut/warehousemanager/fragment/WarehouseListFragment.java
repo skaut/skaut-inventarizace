@@ -38,146 +38,145 @@ import timber.log.Timber;
 
 public class WarehouseListFragment extends BaseFragment {
 
-    @Bind(R.id.warehouseList)
-    EmptyRecyclerView warehouseList;
+	@Bind(R.id.warehouseList)
+	EmptyRecyclerView warehouseList;
 
-    @Bind(R.id.noWarehouseText)
-    TextView noWarehouseText;
+	@Bind(R.id.noWarehouseText)
+	TextView noWarehouseText;
 
-    @Bind(R.id.progressWheel)
-    ProgressWheel progressWheel;
+	@Bind(R.id.progressWheel)
+	ProgressWheel progressWheel;
 
-    @Bind(R.id.syncButton)
-    FloatingActionButton syncButton;
+	@Bind(R.id.syncButton)
+	FloatingActionButton syncButton;
 
-    private WarehouseAdapter adapter;
+	private WarehouseAdapter adapter;
 
-    private RxLoader<Object> syncLoader;
+	private RxLoader<Object> syncLoader;
 
-    private static final String SYNC_TAG = "SYNC_LOADER";
-    private static final String WAREHOUSE_TAG = "WAREHOUSE_LOADER";
+	private static final String SYNC_TAG = "SYNC_LOADER";
+	private static final String WAREHOUSE_TAG = "WAREHOUSE_LOADER";
 
-    public WarehouseListFragment() {
-        // Required empty public constructor
-    }
+	public WarehouseListFragment() {
+		// Required empty public constructor
+	}
 
-    public static WarehouseListFragment newInstance() {
-        return new WarehouseListFragment();
-    }
+	public static WarehouseListFragment newInstance() {
+		return new WarehouseListFragment();
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-        hideUpButton();
-        setHasOptionsMenu(true);
+		hideUpButton();
+		setHasOptionsMenu(true);
 
-        // configure RecyclerView
-        warehouseList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        warehouseList.setHasFixedSize(true);
-        warehouseList.setEmptyView(noWarehouseText);
-        warehouseList.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(getActivity(), R.drawable.divider), false, false));
+		// configure RecyclerView
+		warehouseList.setLayoutManager(new LinearLayoutManager(getActivity()));
+		warehouseList.setHasFixedSize(true);
+		warehouseList.setEmptyView(noWarehouseText);
+		warehouseList.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(getActivity(), R.drawable.divider), false, false));
 
-        WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
-        ItemManager itemManager = WarehouseApplication.getItemManager();
+		WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
+		ItemManager itemManager = WarehouseApplication.getItemManager();
 
-        // configure adapter
-        adapter = new WarehouseAdapter(getActivity(), Collections.<Warehouse>emptyList());
-        warehouseList.setAdapter(adapter);
+		// configure adapter
+		adapter = new WarehouseAdapter(getActivity(), Collections.<Warehouse>emptyList());
+		warehouseList.setAdapter(adapter);
 
-        setTitle(R.string.warehouse_list);
-        setSubtitle(prefs.getString(C.USER_ROLE, ""));
+		setTitle(R.string.warehouse_list);
+		setSubtitle(prefs.getString(C.USER_ROLE, ""));
 
-        ItemClickSupport clickSupport = ItemClickSupport.addTo(warehouseList);
+		ItemClickSupport clickSupport = ItemClickSupport.addTo(warehouseList);
 
-        clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
-            Warehouse warehouse = adapter.getItem(position);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, ItemListFragment.newInstance(warehouse.getId()))
-                    .addToBackStack(null).commit();
-        });
+		clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
+			Warehouse warehouse = adapter.getItem(position);
+			getActivity().getSupportFragmentManager().beginTransaction()
+					.replace(R.id.container, ItemListFragment.newInstance(warehouse.getId()))
+					.addToBackStack(null).commit();
+		});
 
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+		RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 
-        // create warehouse loader and starts loading
-        loaderManager.create(
-                WAREHOUSE_TAG,
-                warehouseManager.getWarehouses(),
-                new RxLoaderObserver<List<Warehouse>>() {
-                    @Override
-                    public void onStarted() {
-                        progressWheel.setVisibility(View.VISIBLE);
-                        warehouseList.setVisibility(View.GONE);
-                        noWarehouseText.setVisibility(View.GONE);
-                    }
+		// create warehouse loader and starts loading
+		loaderManager.create(
+				WAREHOUSE_TAG,
+				warehouseManager.getWarehouses(),
+				new RxLoaderObserver<List<Warehouse>>() {
+					@Override
+					public void onStarted() {
+						progressWheel.setVisibility(View.VISIBLE);
+						warehouseList.setVisibility(View.GONE);
+						noWarehouseText.setVisibility(View.GONE);
+					}
 
-                    @Override
-                    public void onNext(List<Warehouse> warehouses) {
-                        adapter.setData(warehouses);
-                    }
+					@Override
+					public void onNext(List<Warehouse> warehouses) {
+						adapter.setData(warehouses);
+					}
 
-                    @Override
-                    public void onCompleted() {
-                        progressWheel.setVisibility(View.GONE);
-                        warehouseList.setVisibility(View.VISIBLE);
+					@Override
+					public void onCompleted() {
+						progressWheel.setVisibility(View.GONE);
+						warehouseList.setVisibility(View.VISIBLE);
 
-                        if (prefs.getBoolean(C.SYNC_NEEDED, false)) {
-                            syncButton.setVisibility(View.VISIBLE);
-                        }
-                    }
+						if (prefs.getBoolean(C.SYNC_NEEDED, false)) {
+							syncButton.setVisibility(View.VISIBLE);
+						}
+					}
 
-                    @Override
-                    public void onError(Throwable e) {
-                        // TODO: handle errors
-                        Timber.e(e, "Error while fetching warehouses");
-                    }
-                }).start();
+					@Override
+					public void onError(Throwable e) {
+						// TODO: handle errors
+						Timber.e(e, "Error while fetching warehouses");
+					}
+				}).start();
 
-        // create sync loader
-        syncLoader = loaderManager.create(
-                SYNC_TAG,
-                itemManager.synchronize(),
-                new RxLoaderObserver<Object>() {
-                    @Override
-                    public void onStarted() {
-                        progressWheel.setVisibility(View.VISIBLE);
-                        warehouseList.setVisibility(View.GONE);
-                        noWarehouseText.setVisibility(View.GONE);
-                    }
+		// create sync loader
+		syncLoader = loaderManager.create(
+				SYNC_TAG,
+				itemManager.synchronize(),
+				new RxLoaderObserver<Object>() {
+					@Override
+					public void onStarted() {
+						progressWheel.setVisibility(View.VISIBLE);
+						warehouseList.setVisibility(View.GONE);
+						noWarehouseText.setVisibility(View.GONE);
+					}
 
-                    @Override
-                    public void onNext(Object value) {
-                    }
+					@Override
+					public void onNext(Object value) {
+					}
 
-                    @Override
-                    public void onCompleted() {
-                        progressWheel.setVisibility(View.GONE);
-                        warehouseList.setVisibility(View.VISIBLE);
-                        syncButton.setVisibility(View.GONE);
-                    }
+					@Override
+					public void onCompleted() {
+						progressWheel.setVisibility(View.GONE);
+						warehouseList.setVisibility(View.VISIBLE);
+						syncButton.setVisibility(View.GONE);
+					}
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e, "Sync error");
-                        progressWheel.setVisibility(View.GONE);
-                        warehouseList.setVisibility(View.VISIBLE);
-                        Snackbar.make(view, R.string.sync_error, Snackbar.LENGTH_LONG).show();
-                    }
-                });
-    }
+					@Override
+					public void onError(Throwable e) {
+						Timber.e(e, "Sync error");
+						progressWheel.setVisibility(View.GONE);
+						warehouseList.setVisibility(View.VISIBLE);
+						Snackbar.make(view, R.string.sync_error, Snackbar.LENGTH_LONG).show();
+					}
+				});
+	}
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-    }
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_menu, menu);
+	}
 
-    @OnClick(R.id.syncButton)
-    void sync() {
-        syncLoader.restart();
-    }
+	@OnClick(R.id.syncButton) void sync() {
+		syncLoader.restart();
+	}
 
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_warehouse_list;
-    }
+	@Override
+	protected int getFragmentLayout() {
+		return R.layout.fragment_warehouse_list;
+	}
 }

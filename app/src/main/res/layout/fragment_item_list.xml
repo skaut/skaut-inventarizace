@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_light"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context=".MainActivity$ItemListFragment">
+												 xmlns:app="http://schemas.android.com/apk/res-auto"
+												 xmlns:tools="http://schemas.android.com/tools"
+												 android:layout_width="match_parent"
+												 android:layout_height="match_parent"
+												 android:background="@color/primary_light"
+												 android:paddingLeft="@dimen/activity_horizontal_margin"
+												 android:paddingRight="@dimen/activity_horizontal_margin"
+												 tools:context=".MainActivity$ItemListFragment">
 
-    <cz.skaut.warehousemanager.helper.EmptyRecyclerView
-        android:id="@+id/itemList"
-        style="@style/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/list_item" />
+	<cz.skaut.warehousemanager.helper.EmptyRecyclerView
+		android:id="@+id/itemList"
+		style="@style/recyclerView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:listitem="@layout/list_item"/>
 
-    <TextView
-        android:id="@+id/noItemText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="10dp"
-        android:text="@string/no_items"
-        android:visibility="gone" />
+	<TextView
+		android:id="@+id/noItemText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:padding="10dp"
+		android:text="@string/no_items"
+		android:visibility="gone"/>
 
-    <include
-        android:id="@+id/progressWheel"
-        layout="@layout/progress_wheel" />
+	<include
+		android:id="@+id/progressWheel"
+		layout="@layout/progress_wheel"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/inventorizeButton"
-        style="@style/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_assignment"
-        app:borderWidth="0dp"
-        app:elevation="4dp"
-        app:layout_anchor="@id/itemList"
-        app:layout_anchorGravity="bottom|right|end" />
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/inventorizeButton"
+		style="@style/floatingActionButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/ic_assignment"
+		app:borderWidth="0dp"
+		app:elevation="4dp"
+		app:layout_anchor="@id/itemList"
+		app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

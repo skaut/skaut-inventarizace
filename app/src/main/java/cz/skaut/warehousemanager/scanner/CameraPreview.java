@@ -30,114 +30,114 @@ import timber.log.Timber;
 @SuppressWarnings("deprecation")
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
-    private Camera mCamera;
-    private Handler mAutoFocusHandler;
-    private boolean mPreviewing = true;
-    private boolean mSurfaceCreated = false;
-    private Camera.PreviewCallback mPreviewCallback;
+	private Camera mCamera;
+	private Handler mAutoFocusHandler;
+	private boolean mPreviewing = true;
+	private boolean mSurfaceCreated = false;
+	private Camera.PreviewCallback mPreviewCallback;
 
-    public CameraPreview(Context context) {
-        super(context);
-    }
+	public CameraPreview(Context context) {
+		super(context);
+	}
 
-    public CameraPreview(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+	public CameraPreview(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 
-    public void setCamera(Camera camera, Camera.PreviewCallback previewCallback) {
-        mCamera = camera;
-        mPreviewCallback = previewCallback;
-        mAutoFocusHandler = new Handler();
-    }
+	public void setCamera(Camera camera, Camera.PreviewCallback previewCallback) {
+		mCamera = camera;
+		mPreviewCallback = previewCallback;
+		mAutoFocusHandler = new Handler();
+	}
 
-    public void initCameraPreview() {
-        if (mCamera != null) {
-            getHolder().addCallback(this);
-            getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-            if (mPreviewing) {
-                requestLayout();
-            } else {
-                showCameraPreview();
-            }
-        }
-    }
+	public void initCameraPreview() {
+		if (mCamera != null) {
+			getHolder().addCallback(this);
+			getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+			if (mPreviewing) {
+				requestLayout();
+			} else {
+				showCameraPreview();
+			}
+		}
+	}
 
-    @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        mSurfaceCreated = true;
-    }
+	@Override
+	public void surfaceCreated(SurfaceHolder surfaceHolder) {
+		mSurfaceCreated = true;
+	}
 
-    @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-        if (surfaceHolder.getSurface() == null) {
-            return;
-        }
-        stopCameraPreview();
-        showCameraPreview();
-    }
+	@Override
+	public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+		if (surfaceHolder.getSurface() == null) {
+			return;
+		}
+		stopCameraPreview();
+		showCameraPreview();
+	}
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        mSurfaceCreated = false;
-        stopCameraPreview();
-    }
+	@Override
+	public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+		mSurfaceCreated = false;
+		stopCameraPreview();
+	}
 
-    private void showCameraPreview() {
-        if (mCamera != null) {
-            try {
-                mPreviewing = true;
-                mCamera.setPreviewDisplay(getHolder());
-                // portrait
-                mCamera.setDisplayOrientation(90);
-                mCamera.setOneShotPreviewCallback(mPreviewCallback);
-                mCamera.startPreview();
-                if (mSurfaceCreated) {
-                    safeAutoFocus();
-                } else {
-                    scheduleAutoFocus();
-                }
-            } catch (IOException e) {
-                Timber.e(e, "Setting surface failed");
-            }
-        }
-    }
+	private void showCameraPreview() {
+		if (mCamera != null) {
+			try {
+				mPreviewing = true;
+				mCamera.setPreviewDisplay(getHolder());
+				// portrait
+				mCamera.setDisplayOrientation(90);
+				mCamera.setOneShotPreviewCallback(mPreviewCallback);
+				mCamera.startPreview();
+				if (mSurfaceCreated) {
+					safeAutoFocus();
+				} else {
+					scheduleAutoFocus();
+				}
+			} catch (IOException e) {
+				Timber.e(e, "Setting surface failed");
+			}
+		}
+	}
 
-    public void stopCameraPreview() {
-        if (mCamera != null) {
-            try {
-                mPreviewing = false;
-                mCamera.cancelAutoFocus();
-                mCamera.setOneShotPreviewCallback(null);
-                mCamera.stopPreview();
-            } catch (Exception e) {
-                Timber.e(e, "Stop camera failed");
-            }
-        }
-    }
+	public void stopCameraPreview() {
+		if (mCamera != null) {
+			try {
+				mPreviewing = false;
+				mCamera.cancelAutoFocus();
+				mCamera.setOneShotPreviewCallback(null);
+				mCamera.stopPreview();
+			} catch (Exception e) {
+				Timber.e(e, "Stop camera failed");
+			}
+		}
+	}
 
-    private final Runnable doAutoFocus = new Runnable() {
-        public void run() {
-            if (mCamera != null && mPreviewing && mSurfaceCreated) {
-                safeAutoFocus();
-            }
-        }
-    };
+	private final Runnable doAutoFocus = new Runnable() {
+		public void run() {
+			if (mCamera != null && mPreviewing && mSurfaceCreated) {
+				safeAutoFocus();
+			}
+		}
+	};
 
-    private void safeAutoFocus() {
-        try {
-            mCamera.autoFocus(autoFocusCB);
-        } catch (RuntimeException e) {
-            // Horrible hack to deal with autofocus errors on Sony devices
-            // See https://github.com/dm77/barcodescanner/issues/7 for example
-            scheduleAutoFocus(); // wait 1 sec and then do check again
-            Timber.e(e, "Autofocus failed");
-        }
-    }
+	private void safeAutoFocus() {
+		try {
+			mCamera.autoFocus(autoFocusCB);
+		} catch (RuntimeException e) {
+			// Horrible hack to deal with autofocus errors on Sony devices
+			// See https://github.com/dm77/barcodescanner/issues/7 for example
+			scheduleAutoFocus(); // wait 1 sec and then do check again
+			Timber.e(e, "Autofocus failed");
+		}
+	}
 
-    // Mimic continuous auto-focusing
-    private final Camera.AutoFocusCallback autoFocusCB = (success, camera) -> scheduleAutoFocus();
+	// Mimic continuous auto-focusing
+	private final Camera.AutoFocusCallback autoFocusCB = (success, camera) -> scheduleAutoFocus();
 
-    private void scheduleAutoFocus() {
-        mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
-    }
+	private void scheduleAutoFocus() {
+		mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
+	}
 }

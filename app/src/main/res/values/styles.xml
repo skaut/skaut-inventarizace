@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="itemAttribute">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
-        <item name="android:textColor">@color/primary_text</item>
-    </style>
+	<style name="itemAttribute">
+		<item name="android:textSize">18sp</item>
+		<item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
+		<item name="android:textColor">@color/primary_text</item>
+	</style>
 
-    <style name="itemAttributeDesc" parent="itemAttribute">
-        <!--<item name="android:paddingTop">0dp</item>-->
-        <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/secondary_text</item>
-    </style>
+	<style name="itemAttributeDesc" parent="itemAttribute">
+		<!--<item name="android:paddingTop">0dp</item>-->
+		<item name="android:textSize">15sp</item>
+		<item name="android:textColor">@color/secondary_text</item>
+	</style>
 
-    <style name="itemAttributeLayout">
-        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
-        <item name="android:paddingTop">@dimen/item_fragment_padding</item>
-        <item name="android:paddingBottom">@dimen/item_fragment_padding</item>
-    </style>
+	<style name="itemAttributeLayout">
+		<item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
+		<item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
+		<item name="android:paddingTop">@dimen/item_fragment_padding</item>
+		<item name="android:paddingBottom">@dimen/item_fragment_padding</item>
+	</style>
 
-    <style name="recyclerView">
-        <item name="android:scrollbars">vertical</item>
-        <item name="android:fadeScrollbars">true</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:background">@color/background</item>
-    </style>
+	<style name="recyclerView">
+		<item name="android:scrollbars">vertical</item>
+		<item name="android:fadeScrollbars">true</item>
+		<item name="android:padding">8dp</item>
+		<item name="android:background">@color/background</item>
+	</style>
 
-    <style name="floatingActionButton">
-        <item name="android:clickable">true</item>
-        <item name="android:visibility">gone</item>
-        <item name="android:layout_margin">16dp</item>
-    </style>
+	<style name="floatingActionButton">
+		<item name="android:clickable">true</item>
+		<item name="android:visibility">gone</item>
+		<item name="android:layout_margin">16dp</item>
+	</style>
 </resources>

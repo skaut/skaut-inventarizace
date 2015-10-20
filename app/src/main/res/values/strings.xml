@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name" translatable="false">Skautská Inventarizace</string>
-    <string name="login_title">Přihlášení</string>
-    <string name="password_hint">Heslo</string>
-    <string name="username_hint">Uživatelské jméno</string>
-    <string name="login">Přihlásit</string>
-    <string name="no_warehouses">Žádné sklady</string>
-    <string name="no_items">Žádné položky</string>
-    <string name="photo_description">Fotka</string>
-    <string name="login_failed">Nepodařilo se přihlásit</string>
-    <string name="warehouse_list">Seznam skladů</string>
-    <string name="action_inventorize">Inventarizovat</string>
-    <string name="settings">Nastavení</string>
-    <string name="logout">Odhlásit</string>
-    <string name="choose_role">Vybrat roli</string>
-    <string name="choose">Vybrat</string>
-    <string name="inventory_number">Inventární číslo</string>
-    <string name="purchase_price">Pořizovací cena</string>
-    <string name="purchase_date">Datum pořízení</string>
-    <string name="description">Popis</string>
-    <string name="latest_inventory">Poslední inventarizace</string>
-    <string name="action_photo">Vyfotit</string>
-    <string name="camera_error">Nelze spustit fotoaparát</string>
-    <string name="camera_file_error">Nelze vytvořit soubor</string>
-    <string name="photo_save_error">Nelze uložit fotku</string>
-    <string name="action_synchronize">Odeslat změny</string>
-    <string name="sync_error">Chyba při odesílání</string>
-    <string name="inventory_timeframe">Období inventarizace</string>
-    <string name="save">Uložit</string>
-    <string name="cancel">Zrušit</string>
-    <string name="never">nikdy</string>
-    <string name="get_photo_error">Neočekávaná chyba</string>
-    <string name="error.name_empty">Vyplňte jméno</string>
-    <string name="error.password_empty">Vyplňte heslo</string>
-    <string name="inventory_days">Počet dní mezi jednotlivými inventarizacemi</string>
-    <string name="login_no_roles">Chyba - žádné vhodné role</string>
+	<string name="app_name" translatable="false">Skautská Inventarizace</string>
+	<string name="login_title">Přihlášení</string>
+	<string name="password_hint">Heslo</string>
+	<string name="username_hint">Uživatelské jméno</string>
+	<string name="login">Přihlásit</string>
+	<string name="no_warehouses">Žádné sklady</string>
+	<string name="no_items">Žádné položky</string>
+	<string name="photo_description">Fotka</string>
+	<string name="login_failed">Nepodařilo se přihlásit</string>
+	<string name="warehouse_list">Seznam skladů</string>
+	<string name="action_inventorize">Inventarizovat</string>
+	<string name="settings">Nastavení</string>
+	<string name="logout">Odhlásit</string>
+	<string name="choose_role">Vybrat roli</string>
+	<string name="choose">Vybrat</string>
+	<string name="inventory_number">Inventární číslo</string>
+	<string name="purchase_price">Pořizovací cena</string>
+	<string name="purchase_date">Datum pořízení</string>
+	<string name="description">Popis</string>
+	<string name="latest_inventory">Poslední inventarizace</string>
+	<string name="action_photo">Vyfotit</string>
+	<string name="camera_error">Nelze spustit fotoaparát</string>
+	<string name="camera_file_error">Nelze vytvořit soubor</string>
+	<string name="photo_save_error">Nelze uložit fotku</string>
+	<string name="action_synchronize">Odeslat změny</string>
+	<string name="sync_error">Chyba při odesílání</string>
+	<string name="inventory_timeframe">Období inventarizace</string>
+	<string name="save">Uložit</string>
+	<string name="cancel">Zrušit</string>
+	<string name="never">nikdy</string>
+	<string name="get_photo_error">Neočekávaná chyba</string>
+	<string name="error.name_empty">Vyplňte jméno</string>
+	<string name="error.password_empty">Vyplňte heslo</string>
+	<string name="inventory_days">Počet dní mezi jednotlivými inventarizacemi</string>
+	<string name="login_no_roles">Chyba - žádné vhodné role</string>
 </resources>

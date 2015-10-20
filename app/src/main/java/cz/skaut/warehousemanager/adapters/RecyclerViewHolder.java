@@ -8,10 +8,10 @@ import butterknife.ButterKnife;
 
 public abstract class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    public RecyclerViewHolder(View view) {
-        super(view);
-        ButterKnife.bind(this, view);
-    }
+	public RecyclerViewHolder(View view) {
+		super(view);
+		ButterKnife.bind(this, view);
+	}
 
-    public abstract View getAnimatedView();
+	public abstract View getAnimatedView();
 }

@@ -35,182 +35,182 @@ import timber.log.Timber;
 
 public class ItemDetailFragment extends BaseFragment {
 
-    private Item item;
+	private Item item;
 
-    @Bind(R.id.itemPhoto)
-    ImageView itemPhoto;
+	@Bind(R.id.itemPhoto)
+	ImageView itemPhoto;
 
-    @Bind(R.id.itemDescription)
-    TextView itemDescription;
+	@Bind(R.id.itemDescription)
+	TextView itemDescription;
 
-    @Bind(R.id.itemInventoryNumber)
-    TextView itemInventoryNumber;
+	@Bind(R.id.itemInventoryNumber)
+	TextView itemInventoryNumber;
 
-    @Bind(R.id.itemPurchasePrice)
-    TextView itemPurchasePrice;
+	@Bind(R.id.itemPurchasePrice)
+	TextView itemPurchasePrice;
 
-    @Bind(R.id.itemPurchaseDate)
-    TextView itemPurchaseDate;
+	@Bind(R.id.itemPurchaseDate)
+	TextView itemPurchaseDate;
 
-    @Bind(R.id.itemLatestInventory)
-    TextView itemLatestInventory;
+	@Bind(R.id.itemLatestInventory)
+	TextView itemLatestInventory;
 
-    @Bind(R.id.progressWheel)
-    ProgressWheel progressWheel;
+	@Bind(R.id.progressWheel)
+	ProgressWheel progressWheel;
 
-    private File file = null;
+	private File file = null;
 
-    private ItemManager itemManager;
+	private ItemManager itemManager;
 
-    public static ItemDetailFragment newInstance(long itemId) {
-        ItemDetailFragment fragment = new ItemDetailFragment();
-        Bundle args = new Bundle();
-        args.putLong(C.ITEM_INDEX, itemId);
-        fragment.setArguments(args);
-        return fragment;
-    }
+	public static ItemDetailFragment newInstance(long itemId) {
+		ItemDetailFragment fragment = new ItemDetailFragment();
+		Bundle args = new Bundle();
+		args.putLong(C.ITEM_INDEX, itemId);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
-    public ItemDetailFragment() {
-        // Required empty public constructor
-    }
+	public ItemDetailFragment() {
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-        itemManager = WarehouseApplication.getItemManager();
+		itemManager = WarehouseApplication.getItemManager();
 
-        Bundle bundle = this.getArguments();
-        item = itemManager.getItem(bundle.getLong(C.ITEM_INDEX));
-        if (item == null) {
-            throw new AssertionError("ItemDetailFragment created without valid item");
-        }
+		Bundle bundle = this.getArguments();
+		item = itemManager.getItem(bundle.getLong(C.ITEM_INDEX));
+		if (item == null) {
+			throw new AssertionError("ItemDetailFragment created without valid item");
+		}
 
-        setHasOptionsMenu(true);
+		setHasOptionsMenu(true);
 
-        setTitle(item.getName());
+		setTitle(item.getName());
 
-        itemDescription.setText(item.getDescription());
-        itemInventoryNumber.setText(item.getInventoryNumber());
-        itemPurchasePrice.setText(formatPrice(item.getPurchasePrice()));
-        itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
-        Inventory latestInventory = item.getLatestInventory();
+		itemDescription.setText(item.getDescription());
+		itemInventoryNumber.setText(item.getInventoryNumber());
+		itemPurchasePrice.setText(formatPrice(item.getPurchasePrice()));
+		itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
+		Inventory latestInventory = item.getLatestInventory();
 
-        // item has no inventory yet
-        if (latestInventory == null) {
-            itemLatestInventory.setText(R.string.never);
-        } else {
-            long timestamp = latestInventory.getDateTimestamp();
-            itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
-        }
+		// item has no inventory yet
+		if (latestInventory == null) {
+			itemLatestInventory.setText(R.string.never);
+		} else {
+			long timestamp = latestInventory.getDateTimestamp();
+			itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
+		}
 
-        String photoData = item.getPhoto();
-        if (!TextUtils.isEmpty(photoData)) {
-            // decode photo to Bitmap in background thread
-            itemPhoto.setVisibility(View.GONE);
-            progressWheel.setVisibility(View.VISIBLE);
-            itemManager.decodePhoto(item.getPhoto())
-                    .observeOn(AndroidSchedulers.mainThread()) // TODO: check if it works without this
-                    .subscribe(bitmap -> {
-                        itemPhoto.setImageBitmap(bitmap);
-                        itemPhoto.setVisibility(View.VISIBLE);
-                        progressWheel.setVisibility(View.GONE);
-                    }, e -> {
-                        Timber.e(e, "Failed to load photo");
-                        itemPhoto.setVisibility(View.VISIBLE);
-                        progressWheel.setVisibility(View.GONE);
-                        Snackbar.make(progressWheel, R.string.get_photo_error, Snackbar.LENGTH_LONG).show();
-                    });
-        }
-    }
+		String photoData = item.getPhoto();
+		if (!TextUtils.isEmpty(photoData)) {
+			// decode photo to Bitmap in background thread
+			itemPhoto.setVisibility(View.GONE);
+			progressWheel.setVisibility(View.VISIBLE);
+			itemManager.decodePhoto(item.getPhoto())
+					.observeOn(AndroidSchedulers.mainThread()) // TODO: check if it works without this
+					.subscribe(bitmap -> {
+						itemPhoto.setImageBitmap(bitmap);
+						itemPhoto.setVisibility(View.VISIBLE);
+						progressWheel.setVisibility(View.GONE);
+					}, e -> {
+						Timber.e(e, "Failed to load photo");
+						itemPhoto.setVisibility(View.VISIBLE);
+						progressWheel.setVisibility(View.GONE);
+						Snackbar.make(progressWheel, R.string.get_photo_error, Snackbar.LENGTH_LONG).show();
+					});
+		}
+	}
 
-    /**
-     * Formats purchase price
-     * @param price price to be formatted
-     * @return formatted price
-     */
-    private String formatPrice(String price) {
-        NumberFormat nf = NumberFormat.getCurrencyInstance();
-        nf.setMaximumFractionDigits(0);
+	/**
+	 * Formats purchase price
+	 *
+	 * @param price price to be formatted
+	 * @return formatted price
+	 */
+	private String formatPrice(String price) {
+		NumberFormat nf = NumberFormat.getCurrencyInstance();
+		nf.setMaximumFractionDigits(0);
 
-        if (TextUtils.isEmpty(price)) {
-            return "";
-        } else {
-            float priceFloat = Float.valueOf(price);
-            return nf.format(priceFloat);
-        }
-    }
+		if (TextUtils.isEmpty(price)) {
+			return "";
+		} else {
+			float priceFloat = Float.valueOf(price);
+			return nf.format(priceFloat);
+		}
+	}
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-    }
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_menu, menu);
+	}
 
-    @OnClick(R.id.photoFab)
-    void takePhoto() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	@OnClick(R.id.photoFab) void takePhoto() {
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        // check if the phone can handle camera intent
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            try {
-                File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                file = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
-            } catch (IOException e) {
-                Timber.e(e, "Failed to create file");
-                Snackbar.make(progressWheel, R.string.camera_file_error, Snackbar.LENGTH_LONG).show();
-            }
+		// check if the phone can handle camera intent
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			try {
+				File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+				file = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
+			} catch (IOException e) {
+				Timber.e(e, "Failed to create file");
+				Snackbar.make(progressWheel, R.string.camera_file_error, Snackbar.LENGTH_LONG).show();
+			}
 
-            if (file != null) {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
-            }
-        } else {
-            Timber.e("Error dispatching camera intent");
-            Snackbar.make(progressWheel, R.string.camera_error, Snackbar.LENGTH_LONG).show();
-        }
-    }
+			if (file != null) {
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+				startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
+			}
+		} else {
+			Timber.e("Error dispatching camera intent");
+			Snackbar.make(progressWheel, R.string.camera_error, Snackbar.LENGTH_LONG).show();
+		}
+	}
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == C.CAMERA_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                itemPhoto.setVisibility(View.GONE);
-                progressWheel.setVisibility(View.VISIBLE);
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == C.CAMERA_REQUEST_CODE) {
+			if (resultCode == Activity.RESULT_OK) {
+				itemPhoto.setVisibility(View.GONE);
+				progressWheel.setVisibility(View.VISIBLE);
 
-                // initiate saving photo
-                itemManager.saveItemPhoto(file, item.getId())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(bitmap -> {
-                            itemPhoto.setImageBitmap(bitmap);
-                            itemPhoto.setVisibility(View.VISIBLE);
-                            progressWheel.setVisibility(View.GONE);
-                        }, e -> {
-                            Timber.e(e, "Failed to save photo");
-                            itemPhoto.setVisibility(View.VISIBLE);
-                            progressWheel.setVisibility(View.GONE);
-                            Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
+				// initiate saving photo
+				itemManager.saveItemPhoto(file, item.getId())
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribe(bitmap -> {
+							itemPhoto.setImageBitmap(bitmap);
+							itemPhoto.setVisibility(View.VISIBLE);
+							progressWheel.setVisibility(View.GONE);
+						}, e -> {
+							Timber.e(e, "Failed to save photo");
+							itemPhoto.setVisibility(View.VISIBLE);
+							progressWheel.setVisibility(View.GONE);
+							Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
 
-                            // saving photo failed, delete temporary file
-                            if (!file.delete()) {
-                                Timber.e("Failed to delete file");
-                            }
-                        });
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                // no photo taken, delete temporary file
-                if (!file.delete()) {
-                    Timber.e("Failed to delete file");
-                }
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+							// saving photo failed, delete temporary file
+							if (!file.delete()) {
+								Timber.e("Failed to delete file");
+							}
+						});
+			} else if (resultCode == Activity.RESULT_CANCELED) {
+				// no photo taken, delete temporary file
+				if (!file.delete()) {
+					Timber.e("Failed to delete file");
+				}
+			}
+		} else {
+			super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
 
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_item_detail;
-    }
+	@Override
+	protected int getFragmentLayout() {
+		return R.layout.fragment_item_detail;
+	}
 
 
 }

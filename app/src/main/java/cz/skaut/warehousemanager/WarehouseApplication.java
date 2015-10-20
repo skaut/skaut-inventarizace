@@ -14,58 +14,58 @@ import timber.log.Timber;
 
 public class WarehouseApplication extends Application {
 
-    private static SharedPreferences preferences;
-    private static Context context;
-    private static LoginManager loginManager;
-    private static WarehouseManager warehouseManager;
-    private static ItemManager itemManager;
+	private static SharedPreferences preferences;
+	private static Context context;
+	private static LoginManager loginManager;
+	private static WarehouseManager warehouseManager;
+	private static ItemManager itemManager;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        }
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		if (BuildConfig.DEBUG) {
+			Timber.plant(new Timber.DebugTree());
+		}
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        context = getApplicationContext();
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		context = getApplicationContext();
 
-        // debug options
-        //Realm.deleteRealmFile(this);
-        //preferences.edit().putBoolean(C.USER_IS_LOGGED, true).apply();
-        //preferences.edit().putBoolean(C.ITEMS_LOADED, false).apply();
-    }
+		// debug options
+		//Realm.deleteRealmFile(this);
+		//preferences.edit().putBoolean(C.USER_IS_LOGGED, true).apply();
+		//preferences.edit().putBoolean(C.ITEMS_LOADED, false).apply();
+	}
 
-    public static Context getContext() {
-        return context;
-    }
+	public static Context getContext() {
+		return context;
+	}
 
-    public static SharedPreferences getPrefs() {
-        if (preferences == null) {
-            preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        }
-        return preferences;
-    }
+	public static SharedPreferences getPrefs() {
+		if (preferences == null) {
+			preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		}
+		return preferences;
+	}
 
-    public static LoginManager getLoginManager() {
-        if (loginManager == null) {
-            loginManager = new LoginManager(getContext());
-        }
-        return loginManager;
-    }
+	public static LoginManager getLoginManager() {
+		if (loginManager == null) {
+			loginManager = new LoginManager(getContext());
+		}
+		return loginManager;
+	}
 
-    public static WarehouseManager getWarehouseManager() {
-        if (warehouseManager == null) {
-            warehouseManager = new WarehouseManager(getContext());
-        }
-        return warehouseManager;
-    }
+	public static WarehouseManager getWarehouseManager() {
+		if (warehouseManager == null) {
+			warehouseManager = new WarehouseManager(getContext());
+		}
+		return warehouseManager;
+	}
 
-    public static ItemManager getItemManager() {
-        if (itemManager == null) {
-            itemManager = new ItemManager(getContext());
-        }
-        return itemManager;
-    }
+	public static ItemManager getItemManager() {
+		if (itemManager == null) {
+			itemManager = new ItemManager(getContext());
+		}
+		return itemManager;
+	}
 
 }

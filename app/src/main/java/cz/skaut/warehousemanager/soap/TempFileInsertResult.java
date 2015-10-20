@@ -7,11 +7,11 @@ import org.simpleframework.xml.Root;
 @Root(name = "soap:Envelope", strict = false)
 public class TempFileInsertResult {
 
-    @Path("soap:Body/TempFileInsertResponse")
-    @Element(name = "TempFileInsertResult")
-    private long guid;
+	@Path("soap:Body/TempFileInsertResponse")
+	@Element(name = "TempFileInsertResult")
+	private long guid;
 
-    public long getGuid() {
-        return guid;
-    }
+	public long getGuid() {
+		return guid;
+	}
 }

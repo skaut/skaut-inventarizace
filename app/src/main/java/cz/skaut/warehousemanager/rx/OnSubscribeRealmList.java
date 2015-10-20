@@ -11,42 +11,42 @@ import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 public abstract class OnSubscribeRealmList<T extends RealmObject> implements Observable.OnSubscribe<RealmList<T>> {
-    private final Context context;
+	private final Context context;
 
-    public OnSubscribeRealmList(Context context) {
-        this.context = context.getApplicationContext();
-    }
+	public OnSubscribeRealmList(Context context) {
+		this.context = context.getApplicationContext();
+	}
 
-    @Override
-    public void call(final Subscriber<? super RealmList<T>> subscriber) {
-        final Realm realm = Realm.getInstance(context);
-        subscriber.add(Subscriptions.create(() -> {
-            try {
-                realm.close();
-            } catch (RealmException ex) {
-                subscriber.onError(ex);
-            }
-        }));
+	@Override
+	public void call(final Subscriber<? super RealmList<T>> subscriber) {
+		final Realm realm = Realm.getInstance(context);
+		subscriber.add(Subscriptions.create(() -> {
+			try {
+				realm.close();
+			} catch (RealmException ex) {
+				subscriber.onError(ex);
+			}
+		}));
 
-        RealmList<T> object;
-        realm.beginTransaction();
-        try {
-            object = get(realm);
-            realm.commitTransaction();
-        } catch (RuntimeException e) {
-            realm.cancelTransaction();
-            subscriber.onError(new RealmException("Error during transaction.", e));
-            return;
-        } catch (Error e) {
-            realm.cancelTransaction();
-            subscriber.onError(e);
-            return;
-        }
-        if (object != null) {
-            subscriber.onNext(object);
-        }
-        subscriber.onCompleted();
-    }
+		RealmList<T> object;
+		realm.beginTransaction();
+		try {
+			object = get(realm);
+			realm.commitTransaction();
+		} catch (RuntimeException e) {
+			realm.cancelTransaction();
+			subscriber.onError(new RealmException("Error during transaction.", e));
+			return;
+		} catch (Error e) {
+			realm.cancelTransaction();
+			subscriber.onError(e);
+			return;
+		}
+		if (object != null) {
+			subscriber.onNext(object);
+		}
+		subscriber.onCompleted();
+	}
 
-    public abstract RealmList<T> get(Realm realm);
+	public abstract RealmList<T> get(Realm realm);
 }

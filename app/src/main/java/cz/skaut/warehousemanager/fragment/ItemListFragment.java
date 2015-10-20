@@ -35,119 +35,118 @@ import timber.log.Timber;
 
 public class ItemListFragment extends BaseFragment {
 
-    @Bind(R.id.itemList)
-    EmptyRecyclerView itemList;
+	@Bind(R.id.itemList)
+	EmptyRecyclerView itemList;
 
-    @Bind(R.id.noItemText)
-    TextView noItemText;
+	@Bind(R.id.noItemText)
+	TextView noItemText;
 
-    @Bind(R.id.progressWheel)
-    ProgressWheel progressWheel;
+	@Bind(R.id.progressWheel)
+	ProgressWheel progressWheel;
 
-    @Bind(R.id.inventorizeButton)
-    FloatingActionButton inventorizeButton;
+	@Bind(R.id.inventorizeButton)
+	FloatingActionButton inventorizeButton;
 
-    private ItemAdapter adapter;
+	private ItemAdapter adapter;
 
-    private Warehouse warehouse;
+	private Warehouse warehouse;
 
-    public static ItemListFragment newInstance(long warehouseId) {
-        ItemListFragment fragment = new ItemListFragment();
-        Bundle args = new Bundle();
-        args.putLong(C.WAREHOUSE_INDEX, warehouseId);
-        fragment.setArguments(args);
-        return fragment;
-    }
+	public static ItemListFragment newInstance(long warehouseId) {
+		ItemListFragment fragment = new ItemListFragment();
+		Bundle args = new Bundle();
+		args.putLong(C.WAREHOUSE_INDEX, warehouseId);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
-    public ItemListFragment() {
-        // Required empty public constructor
-    }
+	public ItemListFragment() {
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-        setHasOptionsMenu(true);
+		setHasOptionsMenu(true);
 
-        WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
-        ItemManager itemManager = WarehouseApplication.getItemManager();
+		WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
+		ItemManager itemManager = WarehouseApplication.getItemManager();
 
-        Bundle bundle = this.getArguments();
-        warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
-        if(warehouse == null) {
-            throw new AssertionError("ItemListFragment created without valid warehouse");
-        }
+		Bundle bundle = this.getArguments();
+		warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
+		if (warehouse == null) {
+			throw new AssertionError("ItemListFragment created without valid warehouse");
+		}
 
-        setTitle(warehouse.getName());
+		setTitle(warehouse.getName());
 
-        // configure RecyclerView
-        itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        itemList.setHasFixedSize(true);
-        itemList.setEmptyView(noItemText);
-        itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+		// configure RecyclerView
+		itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
+		itemList.setHasFixedSize(true);
+		itemList.setEmptyView(noItemText);
+		itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
-        // configure adapter
-        adapter = new ItemAdapter(getActivity(), Collections.<Item>emptyList());
-        itemList.setAdapter(adapter);
+		// configure adapter
+		adapter = new ItemAdapter(getActivity(), Collections.<Item>emptyList());
+		itemList.setAdapter(adapter);
 
-        ItemClickSupport clickSupport = ItemClickSupport.addTo(itemList);
-        clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
-            Item item = adapter.getItem(position);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, ItemDetailFragment.newInstance(item.getId()))
-                    .addToBackStack(null).commit();
-        });
+		ItemClickSupport clickSupport = ItemClickSupport.addTo(itemList);
+		clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
+			Item item = adapter.getItem(position);
+			getActivity().getSupportFragmentManager().beginTransaction()
+					.replace(R.id.container, ItemDetailFragment.newInstance(item.getId()))
+					.addToBackStack(null).commit();
+		});
 
-        final RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+		final RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 
-        // create item loader
-        loaderManager.create(
-                itemManager.getItems(warehouse.getId()),
-                new RxLoaderObserver<List<Item>>() {
-                    @Override
-                    public void onStarted() {
-                        progressWheel.setVisibility(View.VISIBLE);
-                        itemList.setVisibility(View.GONE);
-                        noItemText.setVisibility(View.GONE);
-                    }
+		// create item loader
+		loaderManager.create(
+				itemManager.getItems(warehouse.getId()),
+				new RxLoaderObserver<List<Item>>() {
+					@Override
+					public void onStarted() {
+						progressWheel.setVisibility(View.VISIBLE);
+						itemList.setVisibility(View.GONE);
+						noItemText.setVisibility(View.GONE);
+					}
 
-                    @Override
-                    public void onNext(List<Item> items) {
-                        adapter.setData(items);
-                        if(!items.isEmpty()) {
-                            inventorizeButton.setVisibility(View.VISIBLE);
-                        }
-                    }
+					@Override
+					public void onNext(List<Item> items) {
+						adapter.setData(items);
+						if (!items.isEmpty()) {
+							inventorizeButton.setVisibility(View.VISIBLE);
+						}
+					}
 
-                    @Override
-                    public void onCompleted() {
-                        progressWheel.setVisibility(View.GONE);
-                        itemList.setVisibility(View.VISIBLE);
-                    }
+					@Override
+					public void onCompleted() {
+						progressWheel.setVisibility(View.GONE);
+						itemList.setVisibility(View.VISIBLE);
+					}
 
-                    @Override
-                    public void onError(Throwable e) {
-                        // TODO: handle errors
-                        Timber.e(e.getMessage());
-                        e.printStackTrace();
-                    }
-                }).start();
-    }
+					@Override
+					public void onError(Throwable e) {
+						// TODO: handle errors
+						Timber.e(e.getMessage());
+						e.printStackTrace();
+					}
+				}).start();
+	}
 
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_item_list;
-    }
+	@Override
+	protected int getFragmentLayout() {
+		return R.layout.fragment_item_list;
+	}
 
-    @OnClick(R.id.inventorizeButton)
-    void inventorize() {
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
-                .addToBackStack(null).commit();
-    }
+	@OnClick(R.id.inventorizeButton) void inventorize() {
+		getActivity().getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
+				.addToBackStack(null).commit();
+	}
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-    }
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_menu, menu);
+	}
 }

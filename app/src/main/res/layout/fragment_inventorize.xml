@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context=".MainActivity$InventorizeFragment">
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:orientation="vertical"
+			  android:paddingLeft="@dimen/activity_horizontal_margin"
+			  android:paddingRight="@dimen/activity_horizontal_margin"
+			  tools:context=".MainActivity$InventorizeFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemInventorizeList"
-        style="@style/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        tools:listitem="@layout/list_item" />
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/itemInventorizeList"
+		style="@style/recyclerView"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="4"
+		tools:listitem="@layout/list_item"/>
 
-    <cz.skaut.warehousemanager.scanner.ZBarScannerView
-        android:id="@+id/scanner"
-        android:layout_width="200dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="3" />
+	<cz.skaut.warehousemanager.scanner.ZBarScannerView
+		android:id="@+id/scanner"
+		android:layout_width="200dp"
+		android:layout_height="0dp"
+		android:layout_gravity="center_horizontal"
+		android:layout_weight="3"/>
 </LinearLayout>

@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="@dimen/activity_horizontal_margin"
-    tools:context=".MainActivity$RoleFragment">
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center"
+				android:padding="@dimen/activity_horizontal_margin"
+				tools:context=".MainActivity$RoleFragment">
 
-    <RelativeLayout
-        android:id="@+id/roleBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center">
+	<RelativeLayout
+		android:id="@+id/roleBox"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:gravity="center">
 
-        <Spinner
-            android:id="@+id/roleSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+		<Spinner
+			android:id="@+id/roleSpinner"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/chooseButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/roleSpinner"
-            android:layout_marginTop="10dp"
-            android:padding="10dp"
-            android:text="@string/choose"
-            android:textSize="15sp" />
-    </RelativeLayout>
+		<Button
+			android:id="@+id/chooseButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/roleSpinner"
+			android:layout_marginTop="10dp"
+			android:padding="10dp"
+			android:text="@string/choose"
+			android:textSize="15sp"/>
+	</RelativeLayout>
 
-    <include
-        android:id="@+id/progressWheel"
-        layout="@layout/progress_wheel"
-        android:visibility="gone" />
+	<include
+		android:id="@+id/progressWheel"
+		layout="@layout/progress_wheel"
+		android:visibility="gone"/>
 
 </RelativeLayout>

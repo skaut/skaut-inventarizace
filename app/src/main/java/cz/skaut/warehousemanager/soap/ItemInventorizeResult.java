@@ -8,11 +8,11 @@ import org.simpleframework.xml.Root;
 @Root(name = "soap:Envelope", strict = false)
 public class ItemInventorizeResult {
 
-    @Path("soap:Body/WarehouseItemInventoryInsertResponse/WarehouseItemInventoryInsertResult")
-    @Element(name = "ID")
-    private long id;
+	@Path("soap:Body/WarehouseItemInventoryInsertResponse/WarehouseItemInventoryInsertResult")
+	@Element(name = "ID")
+	private long id;
 
-    public long getId() {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 }
