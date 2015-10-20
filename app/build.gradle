@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "cz.skaut.warehousemanager"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -25,14 +25,19 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    dexOptions {
+        incremental true // TODO: disable on CI if needed
+        preDexLibraries false
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.android.support:design:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:design:23.1.0'
 
-    compile 'com.pnikosis:materialish-progress:1.5'
+    compile 'com.pnikosis:materialish-progress:1.7'
     compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
 
     compile('com.squareup.retrofit:converter-simplexml:1.9.0') {
@@ -41,10 +46,15 @@ dependencies {
         exclude group: 'xpp3', module: 'xpp3'
     }
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton.timber:timber:3.1.0'
     compile 'me.dm7.barcodescanner:zbar:1.7.2'
-    compile 'io.realm:realm-android:0.81.1'
+    compile 'io.realm:realm-android:0.83.1'
+
     compile 'me.tatarka.rxloader:rxloader:1.1.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
+    compile 'io.reactivex:rxjava:1.0.14'
+    //compile 'io.reactivex:rxandroid:1.0.1'
 }
