@@ -1,6 +1,7 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView
+	android:id="@+id/listItem"
+	xmlns:android="http://schemas.android.com/apk/res/android"
 		  xmlns:tools="http://schemas.android.com/tools"
-		  android:id="@+id/listItem"
 		  android:layout_width="match_parent"
 		  android:layout_height="wrap_content"
 		  android:clickable="true"
