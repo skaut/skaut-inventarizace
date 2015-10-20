@@ -2,6 +2,7 @@ package cz.skaut.warehousemanager.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -23,6 +24,7 @@ public abstract class BaseFragment extends Fragment {
 		return inflater.inflate(getFragmentLayout(), container, false);
 	}
 
+	@LayoutRes
 	protected abstract int getFragmentLayout();
 
 	@Override
