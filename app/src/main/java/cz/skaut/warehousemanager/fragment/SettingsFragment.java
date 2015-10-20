@@ -17,14 +17,10 @@ import timber.log.Timber;
 
 public class SettingsFragment extends BaseFragment {
 
-	@Bind(R.id.settingsTimeframe)
-	TextView timeFrameText;
-
-	@Bind(R.id.settingsTimeframeLayout)
-	LinearLayout timeFrameLayout;
+	@Bind(R.id.settingsTimeframe) TextView timeFrameText;
+	@Bind(R.id.settingsTimeframeLayout) LinearLayout timeFrameLayout;
 
 	private AlertDialog dialog;
-
 	private EditText input;
 
 	private long period;

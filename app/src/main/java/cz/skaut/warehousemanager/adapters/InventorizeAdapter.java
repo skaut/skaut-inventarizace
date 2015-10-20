@@ -1,6 +1,6 @@
 package cz.skaut.warehousemanager.adapters;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -20,16 +20,16 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
 
 	private final Set<Item> inventorizedItems;
 
-	public InventorizeAdapter(Context context, List<Item> data) {
+	public InventorizeAdapter(List<Item> data) {
 		// create new ArrayList to break RealmList connection
 		// TODO: try to remove this
-		super(context, new ArrayList<>(data));
+		super(new ArrayList<>(data));
 		inventorizedItems = new HashSet<>();
 	}
 
 	@Override
 	public InventoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View v = inflater.inflate(R.layout.list_item_inventorize, parent, false);
+		View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_inventorize, parent, false);
 		return new InventoryViewHolder(v);
 	}
 
@@ -89,11 +89,9 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
 	}
 
 	class InventoryViewHolder extends RecyclerViewHolder {
-		@Bind(R.id.itemListInventorize)
-		TextView itemNameText;
 
-		@Bind(R.id.inventorizeCheckbox)
-		CheckBox inventorizeCheckbox;
+		@Bind(R.id.itemListInventorize) TextView itemNameText;
+		@Bind(R.id.inventorizeCheckbox) CheckBox inventorizeCheckbox;
 
 		public InventoryViewHolder(View base) {
 			super(base);

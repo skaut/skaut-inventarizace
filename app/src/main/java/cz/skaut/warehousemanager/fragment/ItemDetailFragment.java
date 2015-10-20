@@ -35,28 +35,15 @@ import timber.log.Timber;
 
 public class ItemDetailFragment extends BaseFragment {
 
+	@Bind(R.id.itemPhoto) ImageView itemPhoto;
+	@Bind(R.id.itemDescription) TextView itemDescription;
+	@Bind(R.id.itemInventoryNumber) TextView itemInventoryNumber;
+	@Bind(R.id.itemPurchasePrice) TextView itemPurchasePrice;
+	@Bind(R.id.itemPurchaseDate) TextView itemPurchaseDate;
+	@Bind(R.id.itemLatestInventory) TextView itemLatestInventory;
+	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
+
 	private Item item;
-
-	@Bind(R.id.itemPhoto)
-	ImageView itemPhoto;
-
-	@Bind(R.id.itemDescription)
-	TextView itemDescription;
-
-	@Bind(R.id.itemInventoryNumber)
-	TextView itemInventoryNumber;
-
-	@Bind(R.id.itemPurchasePrice)
-	TextView itemPurchasePrice;
-
-	@Bind(R.id.itemPurchaseDate)
-	TextView itemPurchaseDate;
-
-	@Bind(R.id.itemLatestInventory)
-	TextView itemLatestInventory;
-
-	@Bind(R.id.progressWheel)
-	ProgressWheel progressWheel;
 
 	private File file = null;
 

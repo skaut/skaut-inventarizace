@@ -1,6 +1,6 @@
 package cz.skaut.warehousemanager.adapters;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,13 +13,13 @@ import cz.skaut.warehousemanager.entity.Item;
 
 public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewHolder> {
 
-	public ItemAdapter(Context context, List<Item> data) {
-		super(context, data);
+	public ItemAdapter(List<Item> data) {
+		super(data);
 	}
 
 	@Override
 	public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View v = inflater.inflate(R.layout.list_item, parent, false);
+		View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 		return new ItemViewHolder(v);
 	}
 
@@ -36,8 +36,8 @@ public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewH
 	}
 
 	class ItemViewHolder extends RecyclerViewHolder {
-		@Bind(R.id.listItem)
-		public TextView itemNameText;
+
+		@Bind(R.id.listItem) public TextView itemNameText;
 
 		public ItemViewHolder(View base) {
 			super(base);

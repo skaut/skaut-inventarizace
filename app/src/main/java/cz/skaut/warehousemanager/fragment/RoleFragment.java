@@ -26,14 +26,9 @@ import timber.log.Timber;
 
 public class RoleFragment extends BaseFragment {
 
-	@Bind(R.id.roleSpinner)
-	Spinner roleSpinner;
-
-	@Bind(R.id.progressWheel)
-	ProgressWheel progressWheel;
-
-	@Bind(R.id.roleBox)
-	RelativeLayout roleBox;
+	@Bind(R.id.roleSpinner) Spinner roleSpinner;
+	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
+	@Bind(R.id.roleBox) RelativeLayout roleBox;
 
 	private RxLoader1<Role, Object> roleLoader;
 

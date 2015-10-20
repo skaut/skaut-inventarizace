@@ -20,11 +20,8 @@ import timber.log.Timber;
 
 public class InventorizeFragment extends BaseFragment {
 
-	@Bind(R.id.scanner)
-	ZBarScannerView scannerView;
-
-	@Bind(R.id.itemInventorizeList)
-	RecyclerView itemList;
+	@Bind(R.id.scanner) ZBarScannerView scannerView;
+	@Bind(R.id.itemInventorizeList) RecyclerView itemList;
 
 	private InventorizeAdapter adapter;
 
@@ -59,7 +56,7 @@ public class InventorizeFragment extends BaseFragment {
 		itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
 		// configure adapter
-		adapter = new InventorizeAdapter(getActivity(), Collections.<Item>emptyList());
+		adapter = new InventorizeAdapter(Collections.<Item>emptyList());
 		itemList.setAdapter(adapter);
 		adapter.setData(itemManager.getAllUninventorizedItems(warehouseId));
 

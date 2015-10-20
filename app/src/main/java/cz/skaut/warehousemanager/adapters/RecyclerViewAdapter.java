@@ -1,31 +1,45 @@
 package cz.skaut.warehousemanager.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.jakewharton.rxbinding.view.RxView;
+
 import java.util.List;
+
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> extends RecyclerView.Adapter<VH> {
 
-	protected final Context context;
-	protected final LayoutInflater inflater;
 	protected List<T> data;
 	private int lastPosition = -1;
+	private PublishSubject<Integer> clickSubject = PublishSubject.create();
 
-	public RecyclerViewAdapter(Context context, List<T> data) {
+	public RecyclerViewAdapter(List<T> data) {
 		setHasStableIds(true);
-		this.context = context.getApplicationContext();
 		this.data = data;
-		inflater = LayoutInflater.from(this.context);
+	}
+
+	protected void subscribeClicks(View view, View parent, VH holder) {
+		RxView.clickEvents(view)
+				.takeUntil(RxView.detaches(parent))
+				.doOnNext(v -> Timber.d("adapter click"))
+				.doOnTerminate(() -> Timber.d("terminate"))
+				.map(v -> holder.getAdapterPosition())
+				.subscribe(clickSubject);
 	}
 
 	public void setData(List<T> data) {
 		this.data = data;
 		notifyDataSetChanged();
+	}
+
+	public Observable<Integer> clicks() {
+		return clickSubject.asObservable();
 	}
 
 	@Override
@@ -47,7 +61,7 @@ public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> exte
 			return;
 		}
 		if (position > lastPosition) {
-			Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+			Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.slide_in_left);
 			int offset = 0;
 			if (position > 0) {
 				offset = 50 * position;

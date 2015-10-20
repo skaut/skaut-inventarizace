@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-import org.lucasr.twowayview.ItemClickSupport;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -38,17 +36,10 @@ import timber.log.Timber;
 
 public class WarehouseListFragment extends BaseFragment {
 
-	@Bind(R.id.warehouseList)
-	EmptyRecyclerView warehouseList;
-
-	@Bind(R.id.noWarehouseText)
-	TextView noWarehouseText;
-
-	@Bind(R.id.progressWheel)
-	ProgressWheel progressWheel;
-
-	@Bind(R.id.syncButton)
-	FloatingActionButton syncButton;
+	@Bind(R.id.warehouseList) EmptyRecyclerView warehouseList;
+	@Bind(R.id.noWarehouseText) TextView noWarehouseText;
+	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
+	@Bind(R.id.syncButton) FloatingActionButton syncButton;
 
 	private WarehouseAdapter adapter;
 
@@ -82,20 +73,21 @@ public class WarehouseListFragment extends BaseFragment {
 		ItemManager itemManager = WarehouseApplication.getItemManager();
 
 		// configure adapter
-		adapter = new WarehouseAdapter(getActivity(), Collections.<Warehouse>emptyList());
+		adapter = new WarehouseAdapter(Collections.<Warehouse>emptyList());
 		warehouseList.setAdapter(adapter);
 
 		setTitle(R.string.warehouse_list);
 		setSubtitle(prefs.getString(C.USER_ROLE, ""));
 
-		ItemClickSupport clickSupport = ItemClickSupport.addTo(warehouseList);
-
-		clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
-			Warehouse warehouse = adapter.getItem(position);
-			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, ItemListFragment.newInstance(warehouse.getId()))
-					.addToBackStack(null).commit();
-		});
+		adapter.clicks()
+				.doOnNext(view1 -> Timber.d("got smth"))
+				.map(adapter::getItem)
+				.subscribe(warehouse -> {
+					getActivity().getSupportFragmentManager().beginTransaction()
+							.replace(R.id.container, ItemListFragment.newInstance(warehouse.getId()))
+							.addToBackStack(null).commit();
+					//Timber.d("id: " + warehouse.getId());
+				});
 
 		RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 

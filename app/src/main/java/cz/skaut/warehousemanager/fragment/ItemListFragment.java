@@ -35,17 +35,10 @@ import timber.log.Timber;
 
 public class ItemListFragment extends BaseFragment {
 
-	@Bind(R.id.itemList)
-	EmptyRecyclerView itemList;
-
-	@Bind(R.id.noItemText)
-	TextView noItemText;
-
-	@Bind(R.id.progressWheel)
-	ProgressWheel progressWheel;
-
-	@Bind(R.id.inventorizeButton)
-	FloatingActionButton inventorizeButton;
+	@Bind(R.id.itemList) EmptyRecyclerView itemList;
+	@Bind(R.id.noItemText) TextView noItemText;
+	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
+	@Bind(R.id.inventorizeButton) FloatingActionButton inventorizeButton;
 
 	private ItemAdapter adapter;
 
@@ -87,7 +80,7 @@ public class ItemListFragment extends BaseFragment {
 		itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
 		// configure adapter
-		adapter = new ItemAdapter(getActivity(), Collections.<Item>emptyList());
+		adapter = new ItemAdapter(Collections.<Item>emptyList());
 		itemList.setAdapter(adapter);
 
 		ItemClickSupport clickSupport = ItemClickSupport.addTo(itemList);

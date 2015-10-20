@@ -1,6 +1,6 @@
 package cz.skaut.warehousemanager.adapters;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,13 +13,13 @@ import cz.skaut.warehousemanager.entity.Warehouse;
 
 public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAdapter.WarehouseViewHolder> {
 
-	public WarehouseAdapter(Context context, List<Warehouse> data) {
-		super(context, data);
+	public WarehouseAdapter(List<Warehouse> data) {
+		super(data);
 	}
 
 	@Override
 	public WarehouseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = inflater.inflate(R.layout.list_item, parent, false);
+		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 		return new WarehouseViewHolder(view);
 	}
 
@@ -27,6 +27,7 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 	public void onBindViewHolder(WarehouseViewHolder holder, int position) {
 		super.onBindViewHolder(holder, position);
 		Warehouse warehouse = getItem(position);
+		subscribeClicks(holder.itemView, holder.itemView, holder);
 		holder.warehouseNameText.setText(warehouse.getName());
 	}
 
@@ -37,8 +38,7 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 
 	public class WarehouseViewHolder extends RecyclerViewHolder {
 
-		@Bind(R.id.listItem)
-		TextView warehouseNameText;
+		@Bind(R.id.listItem) TextView warehouseNameText;
 
 		public WarehouseViewHolder(View view) {
 			super(view);
