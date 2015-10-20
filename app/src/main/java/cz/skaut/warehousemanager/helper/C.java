@@ -25,8 +25,7 @@ public class C {
 	public static final String MATERIAL_SERVICE = SERVICE_NAME + "/Material.asmx";
 	public static final String USER_SERVICE = SERVICE_NAME + "/UserManagement.asmx";
 
-	public static final String REQUEST_XML_HEADER = "Content-Type: text/xml; ";
-	public static final String REQUEST_FORM_HEADER = "Content-Type: application/x-www-form-urlencoded; charset=utf-8";
+	public static final String REQUEST_XML_HEADER = "Content-Type: text/xml;";
 
 	public static final String APPLICATION_ID = "cd5f12c7-4fde-481a-9fbb-b167b1d33152";
 	public static final String LOGINDATA_1 = "Přihlásit";
