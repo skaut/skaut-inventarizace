@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 				fragment = WarehouseListFragment.newInstance();
 			} else {
 				// login needed, show login screen
-				fragment = LoginFragment.newInstance();
+				fragment = LoginFragment.Companion.newInstance();
 			}
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, fragment)
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 				FragmentManager manager = getSupportFragmentManager();
 				manager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 				manager.beginTransaction()
-						.replace(R.id.container, LoginFragment.newInstance())
+						.replace(R.id.container, LoginFragment.Companion.newInstance())
 						.commit();
 				return true;
 			case R.id.settings:
