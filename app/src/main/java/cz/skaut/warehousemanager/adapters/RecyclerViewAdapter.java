@@ -25,7 +25,7 @@ public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> exte
 	}
 
 	protected void subscribeClicks(View view, View parent, VH holder) {
-		RxView.clickEvents(view)
+		RxView.clicks(view)
 				.takeUntil(RxView.detaches(parent))
 				.doOnNext(v -> Timber.d("adapter click"))
 				.doOnTerminate(() -> Timber.d("terminate"))
