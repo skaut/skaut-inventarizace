@@ -1,6 +1,5 @@
 package cz.skaut.warehousemanager.manager;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -24,7 +23,7 @@ import cz.skaut.warehousemanager.soap.ItemAll;
 import cz.skaut.warehousemanager.soap.ItemInventorize;
 import cz.skaut.warehousemanager.soap.ItemInventory;
 import cz.skaut.warehousemanager.soap.ItemPhoto;
-import cz.skaut.warehousemanager.soap.SkautApiManager;
+import cz.skaut.warehousemanager.soap.SkautISApiManager;
 import cz.skaut.warehousemanager.soap.TempFileInsert;
 import io.realm.Realm;
 import rx.Observable;
@@ -89,7 +88,7 @@ public class ItemManager {
 			return getAllItems(warehouseId);
 		} else {
 			ItemAll request = new ItemAll();
-			return SkautApiManager.getWarehouseApi().getAllItems(request)
+			return SkautISApiManager.getWarehouseApi().getAllItems(request)
 					.flatMap(itemAllResult -> RealmObservable.results(context, realm -> {
 						Timber.i("Item All: " + itemAllResult.toString());
 						realm.allObjects(Item.class).clear();
@@ -122,7 +121,7 @@ public class ItemManager {
 	 */
 	private Observable<Long> getInventory(final long itemId) {
 		ItemInventory request = new ItemInventory(itemId);
-		return SkautApiManager.getWarehouseApi().getItemInventory(request)
+		return SkautISApiManager.getWarehouseApi().getItemInventory(request)
 				.flatMap(itemInventoryResult -> RealmObservable.work(context, realm -> {
 					Inventory inventory = itemInventoryResult.getLatestInventory();
 					if (inventory != null) {
@@ -150,7 +149,7 @@ public class ItemManager {
 	 */
 	private Observable<Long> getPhoto(final long itemId) {
 		ItemPhoto request = new ItemPhoto(itemId);
-		return SkautApiManager.getWarehouseApi().getItemPhoto(request)
+		return SkautISApiManager.getWarehouseApi().getItemPhoto(request)
 				.flatMap(itemPhotoResult -> RealmObservable.work(context, realm -> {
 					if (itemPhotoResult.getPhotoData() != null) {
 						Item item = realm.where(Item.class).equalTo("id", itemId).findFirst();
@@ -293,7 +292,7 @@ public class ItemManager {
 		final long itemId = item.getId();
 		TempFileInsert request = new TempFileInsert("test.jpg", "jpg", item.getPhoto());
 
-		return SkautApiManager.getWarehouseApi().uploadPhoto(request)
+		return SkautISApiManager.getWarehouseApi().uploadPhoto(request)
 				.flatMap(tempFileInsertResult -> RealmObservable.work(context, realm -> {
 					Item tempItem = realm.where(Item.class).equalTo("id", itemId).findFirst();
 					tempItem.setSynced(true);
@@ -329,7 +328,7 @@ public class ItemManager {
 		ItemInventorize request = new ItemInventorize(inventory);
 		final long itemId = inventory.getItemId();
 
-		return SkautApiManager.getWarehouseApi().itemInventorize(request)
+		return SkautISApiManager.getWarehouseApi().itemInventorize(request)
 				.flatMap(itemInventorizeResult -> RealmObservable.work(context, realm -> {
 					Inventory tempInventory = realm.where(Inventory.class).equalTo("itemId", itemId).findFirst();
 					tempInventory.setSynced(true);

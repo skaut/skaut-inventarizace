@@ -7,7 +7,7 @@ import android.view.View;
 
 import java.util.Collections;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.adapters.InventorizeAdapter;
@@ -20,8 +20,8 @@ import timber.log.Timber;
 
 public class InventorizeFragment extends BaseFragment {
 
-	@Bind(R.id.scanner) ZBarScannerView scannerView;
-	@Bind(R.id.itemInventorizeList) RecyclerView itemList;
+	@BindView(R.id.scanner) ZBarScannerView scannerView;
+	@BindView(R.id.itemInventorizeList) RecyclerView itemList;
 
 	private InventorizeAdapter adapter;
 

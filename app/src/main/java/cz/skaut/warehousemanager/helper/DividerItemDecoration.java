@@ -28,6 +28,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 		a.recycle();
 	}
 
+	/*
 	public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
 								 boolean showLastDivider) {
 		this(context, attrs);
@@ -35,7 +36,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 		mShowLastDivider = showLastDivider;
 	}
 
-	public DividerItemDecoration(Drawable divider) {
+*/
+
+	// bylo public
+	private DividerItemDecoration(Drawable divider) {
 		mDivider = divider;
 	}
 
@@ -71,7 +75,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 			return;
 		}
 
-		// Initialization needed to avoid compiler warning
+		// Initialization needed to avoid compiler warnings
 		int left = 0, right = 0, top = 0, bottom = 0, size;
 		int orientation = getOrientation(parent);
 		int childCount = parent.getChildCount();

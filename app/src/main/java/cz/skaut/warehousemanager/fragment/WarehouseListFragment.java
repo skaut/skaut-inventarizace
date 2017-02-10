@@ -16,7 +16,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -36,10 +36,10 @@ import timber.log.Timber;
 
 public class WarehouseListFragment extends BaseFragment {
 
-	@Bind(R.id.warehouseList) EmptyRecyclerView warehouseList;
-	@Bind(R.id.noWarehouseText) TextView noWarehouseText;
-	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
-	@Bind(R.id.syncButton) FloatingActionButton syncButton;
+	@BindView(R.id.warehouseList) EmptyRecyclerView warehouseList;
+	@BindView(R.id.noWarehouseText) TextView noWarehouseText;
+	@BindView(R.id.progressWheel) ProgressWheel progressWheel;
+	@BindView(R.id.syncButton) FloatingActionButton syncButton;
 
 	private WarehouseAdapter adapter;
 

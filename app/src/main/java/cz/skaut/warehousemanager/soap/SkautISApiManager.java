@@ -1,6 +1,5 @@
 package cz.skaut.warehousemanager.soap;
 
-
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 
@@ -17,10 +16,10 @@ import retrofit.http.POST;
 import retrofit.http.Query;
 import rx.Observable;
 
-public class SkautApiManager {
+public class SkautISApiManager {
 
-	//@formatter:off
-	public interface SkautWarehouseApi {
+	//@formatter:off, byl public
+	 public interface SkautISWarehouseApi {
 
 		@Headers(C.REQUEST_XML_HEADER)
 		@POST(C.MATERIAL_SERVICE)
@@ -47,7 +46,7 @@ public class SkautApiManager {
 		Observable<TempFileInsertResult> uploadPhoto(@Body TempFileInsert body);
 	}
 
-	public interface SkautUserApi {
+	public interface SkautISUserApi {
 
 		@Headers(C.REQUEST_XML_HEADER)
 		@POST(C.USER_SERVICE)
@@ -62,7 +61,7 @@ public class SkautApiManager {
 		Observable<RoleUpdateResult> changeRole(@Body RoleUpdate body);
 	}
 
-	public interface SkautLoginApi {
+	 public interface SkautISLoginApi {
 
 		@POST("/Login/")
 		@FormUrlEncoded
@@ -78,21 +77,21 @@ public class SkautApiManager {
 			.setLogLevel(RestAdapter.LogLevel.BASIC)
 			.build();
 
-	private static final SkautLoginApi LOGIN_API = REST_ADAPTER.create(SkautLoginApi.class);
+	private static final SkautISLoginApi LOGIN_API = REST_ADAPTER.create(SkautISLoginApi.class);
 
-	private static final SkautWarehouseApi WAREHOUSE_API = REST_ADAPTER.create(SkautWarehouseApi.class);
+	private static final SkautISWarehouseApi WAREHOUSE_API = REST_ADAPTER.create(SkautISWarehouseApi.class);
 
-	private static final SkautUserApi USER_API = REST_ADAPTER.create(SkautUserApi.class);
+	private static final SkautISUserApi USER_API = REST_ADAPTER.create(SkautISUserApi.class);
 
-	public static SkautLoginApi getLoginApi() {
+	public static SkautISLoginApi getLoginApi() {
 		return LOGIN_API;
 	}
 
-	public static SkautWarehouseApi getWarehouseApi() {
+	public static SkautISWarehouseApi getWarehouseApi() {
 		return WAREHOUSE_API;
 	}
 
-	public static SkautUserApi getUserApi() {
+	public static SkautISUserApi getUserApi() {
 		return USER_API;
 	}
 

@@ -17,7 +17,7 @@
 	<string name="choose_role">Choose role</string>
 	<string name="description">Description</string>
 	<string name="inventory_number">Inventory number</string>
-	<string name="inventory_timeframe">Inventory timeframe</string>
+	<string name="inventory_timeframe">Inventory period</string>
 	<string name="latest_inventory">Last inventory</string>
 	<string name="logout">Logout</string>
 	<string name="login_title">Login</string>

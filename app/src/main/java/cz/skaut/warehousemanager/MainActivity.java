@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import butterknife.Bind;
+
 import butterknife.ButterKnife;
+import butterknife.BindView;
+import butterknife.Unbinder;
 import cz.skaut.warehousemanager.fragment.LoginFragment;
 import cz.skaut.warehousemanager.fragment.SettingsFragment;
 import cz.skaut.warehousemanager.fragment.WarehouseListFragment;
@@ -17,14 +19,15 @@ import cz.skaut.warehousemanager.helper.C;
 
 public class MainActivity extends AppCompatActivity {
 
-	@Bind(R.id.toolbar)
+	@BindView(R.id.toolbar)
 	Toolbar toolbar;
+	private Unbinder unbinder;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		ButterKnife.bind(this);
+		unbinder = ButterKnife.bind(this);
 		setSupportActionBar(toolbar);
 
 		toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -70,6 +73,6 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		ButterKnife.unbind(this);
+		unbinder.unbind();
 	}
 }

@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.pnikosis.materialishprogress.ProgressWheel
 import cz.skaut.warehousemanager.R
+import cz.skaut.warehousemanager.R.id.*
 import cz.skaut.warehousemanager.WarehouseApplication
 import cz.skaut.warehousemanager.entity.Role
 import cz.skaut.warehousemanager.helper.C
@@ -26,16 +27,12 @@ class LoginFragment : BaseFragment() {
     val loginBox: LinearLayout by bindView(R.id.loginBox)
     val loginButton: Button by bindView(R.id.loginButton)
 
-    private var loginLoader: RxLoader2<String, String, List<Role>>? = null
+    protected var loginLoader: RxLoader2<String, String, List<Role>>? = null
 
-    override fun getFragmentLayout(): Int {
-        return R.layout.fragment_login
-    }
+    override fun getFragmentLayout(): Int = R.layout.fragment_login
 
     companion object {
-        fun newInstance(): LoginFragment {
-            return LoginFragment()
-        }
+        fun newInstance(): LoginFragment = LoginFragment()
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -60,12 +57,13 @@ class LoginFragment : BaseFragment() {
                 object : RxLoaderObserver<List<Role>>() {
                     override fun onNext(roles: List<Role>) {
                         Timber.d("got roles: " + roles)
-                        if (roles.size == 0) {
+                        //bylo roles.size() == 0
+                        if (roles.isEmpty()) {
                             loginBox.visibility = View.VISIBLE
                             progressWheel.visibility = View.GONE
-                            Snackbar.make(view, R.string.login_no_roles, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(progressWheel, R.string.login_no_roles, Snackbar.LENGTH_LONG).show()
                         } else {
-                            activity.supportFragmentManager.beginTransaction().replace(R.id.container, RoleFragment.newInstance(roles)).commit()
+                            activity.supportFragmentManager.beginTransaction().replace(container, RoleFragment.newInstance(roles)).commit()
                         }
                     }
 
@@ -78,7 +76,7 @@ class LoginFragment : BaseFragment() {
                         Timber.e(e, "Failed to login")
                         loginBox.visibility = View.VISIBLE
                         progressWheel.visibility = View.GONE
-                        Snackbar.make(view, R.string.login_failed, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(progressWheel, R.string.login_failed, Snackbar.LENGTH_LONG).show()
                     }
                 })
 

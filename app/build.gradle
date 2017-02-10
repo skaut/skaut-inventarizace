@@ -1,16 +1,17 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "cz.skaut.warehousemanager"
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion 20
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -18,6 +19,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
         }
     }
     packagingOptions {
@@ -28,7 +32,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
-        incremental true // TODO: disable on CI if needed
         preDexLibraries false
     }
     sourceSets {
@@ -37,17 +40,16 @@ android {
     dataBinding {
         enabled = true
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:23.1.0'
-    compile 'com.android.support:recyclerview-v7:23.1.0'
-    compile 'com.android.support:design:23.1.0'
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:recyclerview-v7:25.1.1'
     compile 'com.pnikosis:materialish-progress:1.7'
     compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
-
     compile('com.squareup.retrofit:converter-simplexml:1.9.0') {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
@@ -55,19 +57,20 @@ dependencies {
     }
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
-
-    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton.timber:timber:3.1.0'
     compile 'me.dm7.barcodescanner:zbar:1.7.2'
     compile 'io.realm:realm-android:0.84.1'
-
     compile 'me.tatarka.rxloader:rxloader:1.1.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    apt 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'io.reactivex:rxjava:1.0.14'
-    //compile 'io.reactivex:rxandroid:1.0.1'
-
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
     provided 'org.glassfish:javax.annotation:10.0-b28'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-1103"
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.6'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

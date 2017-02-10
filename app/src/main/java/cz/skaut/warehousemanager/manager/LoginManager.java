@@ -14,7 +14,7 @@ import cz.skaut.warehousemanager.helper.C;
 import cz.skaut.warehousemanager.soap.LoginResponse;
 import cz.skaut.warehousemanager.soap.RoleAll;
 import cz.skaut.warehousemanager.soap.RoleUpdate;
-import cz.skaut.warehousemanager.soap.SkautApiManager;
+import cz.skaut.warehousemanager.soap.SkautISApiManager;
 import cz.skaut.warehousemanager.soap.UserDetail;
 import cz.skaut.warehousemanager.soap.UserDetailResult;
 import rx.Observable;
@@ -37,11 +37,11 @@ public class LoginManager {
 	 * @return Observable filtered list of available roles
 	 */
 	public Observable<List<Role>> login(final String username, final String password) {
-		final SkautApiManager.SkautUserApi userApi = SkautApiManager.getUserApi();
+		final SkautISApiManager.SkautISUserApi userApi = SkautISApiManager.getUserApi();
 
 		Map<String, String> params = prepareLoginData(username, password);
 
-		return SkautApiManager.getLoginApi().login(C.APPLICATION_ID, params)
+		return SkautISApiManager.getLoginApi().login(C.APPLICATION_ID, params)
 				.flatMap((LoginResponse response) -> {
 					Timber.d("Token: " + response.getToken());
 					Timber.d("Role: " + response.getRole());
@@ -78,13 +78,13 @@ public class LoginManager {
 	 *
 	 * @return object indicating the method succeeded
 	 */
-	public Observable<Object> refreshLogin() {
+	Observable<Object> refreshLogin() {
 		Map<String, String> params = prepareLoginData(prefs.getString(C.USER_NAME, ""), prefs.getString(C.USER_PASSWORD, ""));
 
 		// persist this in case we need to switch to old role
 		long oldRoleId = prefs.getLong(C.USER_ROLE_ID, 0);
 
-		return SkautApiManager.getLoginApi().login(C.APPLICATION_ID, params)
+		return SkautISApiManager.getLoginApi().login(C.APPLICATION_ID, params)
 				.flatMap((LoginResponse response) -> {
 					prefs.edit().putString(C.USER_TOKEN, response.getToken()).apply();
 
@@ -107,7 +107,7 @@ public class LoginManager {
 		} else {
 			Timber.d("Switching to new role");
 			RoleUpdate request = new RoleUpdate(oldRoleId);
-			return SkautApiManager.getUserApi().changeRole(request)
+			return SkautISApiManager.getUserApi().changeRole(request)
 					.flatMap(roleUpdateResult -> {
 						Timber.d("Role update success");
 						return Observable.just(new Object());
@@ -129,7 +129,7 @@ public class LoginManager {
 			return Observable.empty();
 		} else {
 			RoleUpdate request = new RoleUpdate(role.getId());
-			return SkautApiManager.getUserApi().changeRole(request)
+			return SkautISApiManager.getUserApi().changeRole(request)
 					.flatMap(roleUpdateResult -> {
 						Timber.d("Role update success");
 						prefs.edit().putBoolean(C.USER_IS_LOGGED, true)

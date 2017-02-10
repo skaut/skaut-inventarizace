@@ -11,7 +11,7 @@ import cz.skaut.warehousemanager.entity.Warehouse;
 import cz.skaut.warehousemanager.helper.C;
 import cz.skaut.warehousemanager.helper.SortUtils;
 import cz.skaut.warehousemanager.rx.RealmObservable;
-import cz.skaut.warehousemanager.soap.SkautApiManager;
+import cz.skaut.warehousemanager.soap.SkautISApiManager;
 import cz.skaut.warehousemanager.soap.WarehouseAll;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -61,20 +61,19 @@ public class WarehouseManager {
 			return getAllWarehousesSorted();
 		} else {
 			WarehouseAll request = new WarehouseAll();
-			return SkautApiManager.getWarehouseApi().getAllWarehouses(request)
+			return SkautISApiManager.getWarehouseApi().getAllWarehouses(request)
 					.flatMap(warehouseAllResult -> RealmObservable.work(context, realm -> {
 						// removes are existing warehouses from database
 						realm.allObjects(Warehouse.class).clear();
 
 						// copies returned warehouses to database
 						List<Warehouse> realmWarehouses = realm.copyToRealm(warehouseAllResult.getWarehouseList());
-						for (Warehouse w : realmWarehouses) {
-							if (w.getIdParentWarehouse() != 0) {
-								// creates relationship between child and parent warehouses
-								Warehouse parentWarehouse = realm.where(Warehouse.class).equalTo("id", w.getIdParentWarehouse()).findFirst();
-								w.setParentWarehouse(parentWarehouse);
-							}
-						}
+						// creates relationship between child and parent warehouses
+						realmWarehouses.stream().filter(w -> w.getIdParentWarehouse() != 0).forEach(w -> {
+							// creates relationship between child and parent warehouses
+							Warehouse parentWarehouse = realm.where(Warehouse.class).equalTo("id", w.getIdParentWarehouse()).findFirst();
+							w.setParentWarehouse(parentWarehouse);
+						});
 						prefs.edit().putBoolean(C.WAREHOUSES_LOADED, true).apply();
 						return Observable.empty();
 					}))

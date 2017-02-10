@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Item;
 import timber.log.Timber;
@@ -67,8 +67,8 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
 			Timber.d("Code " + code + " not found");
 		}
 	}
-
-	public void inventorize(Item item) {
+	// bylo public
+	private void inventorize(Item item) {
 		int position = data.lastIndexOf(item);
 		inventorize(item, position);
 	}
@@ -90,10 +90,11 @@ public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAda
 
 	class InventoryViewHolder extends RecyclerViewHolder {
 
-		@Bind(R.id.itemListInventorize) TextView itemNameText;
-		@Bind(R.id.inventorizeCheckbox) CheckBox inventorizeCheckbox;
+		@BindView(R.id.itemListInventorize) TextView itemNameText;
+		@BindView(R.id.inventorizeCheckbox) CheckBox inventorizeCheckbox;
 
-		public InventoryViewHolder(View base) {
+		// bylo public
+		InventoryViewHolder(View base) {
 			super(base);
 		}
 

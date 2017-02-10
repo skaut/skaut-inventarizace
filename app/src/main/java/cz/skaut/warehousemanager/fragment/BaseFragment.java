@@ -12,9 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import cz.skaut.warehousemanager.WarehouseApplication;
 
 public abstract class BaseFragment extends Fragment {
+
+	private Unbinder unbinder;
 
 	protected final SharedPreferences prefs = WarehouseApplication.getPrefs();
 
@@ -30,7 +33,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		ButterKnife.bind(this, view);
+		unbinder = ButterKnife.bind(this, view);
 		showUpButton();
 		setSubtitle("");
 	}
@@ -38,7 +41,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		ButterKnife.unbind(this);
+		unbinder.unbind();
 	}
 
 	protected void showUpButton() {

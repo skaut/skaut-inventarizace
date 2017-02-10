@@ -13,7 +13,7 @@ import timber.log.Timber;
 
 public class DateTimeUtils {
 
-	public static final Locale locale = new Locale("cs", "CZ");
+	private static final Locale locale = new Locale("cs", "CZ");
 
 	private DateTimeUtils() {
 		// no instances
@@ -26,7 +26,7 @@ public class DateTimeUtils {
 			date = dateFormat.parse(input);
 		} catch (ParseException e) {
 			Timber.e("Parse error" + e.getMessage());
-			return 0l;
+			return 0L;
 		}
 		return date.getTime();
 	}
@@ -50,7 +50,7 @@ public class DateTimeUtils {
 		}
 		return new SimpleDateFormat(C.DATE_FORMAT, locale).format(parsedDate);
 	}
-
+/*
 	public static String getFormattedDate(String input, String inputFormat, String outputFormat) {
 		if (TextUtils.isEmpty(input)) {
 			return "";
@@ -69,7 +69,7 @@ public class DateTimeUtils {
 	public static String getFormattedToday(String dateFormat) {
 		return new SimpleDateFormat(dateFormat, locale).format(new Date());
 	}
-
+*/
 	public static long getCurrentTimestamp() {
 		return new Date().getTime();
 	}

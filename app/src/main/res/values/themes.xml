@@ -12,5 +12,8 @@
 
 		<item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
 		<item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+		<item name="android:colorBackground">@color/background_material_light</item>
+		<item name="android:textColorPrimaryInverse">@android:color/white</item>
+		<item name="android:windowBackground">@android:color/white</item>
 	</style>
 </resources>

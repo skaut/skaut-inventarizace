@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -35,13 +35,13 @@ import timber.log.Timber;
 
 public class ItemDetailFragment extends BaseFragment {
 
-	@Bind(R.id.itemPhoto) ImageView itemPhoto;
-	@Bind(R.id.itemDescription) TextView itemDescription;
-	@Bind(R.id.itemInventoryNumber) TextView itemInventoryNumber;
-	@Bind(R.id.itemPurchasePrice) TextView itemPurchasePrice;
-	@Bind(R.id.itemPurchaseDate) TextView itemPurchaseDate;
-	@Bind(R.id.itemLatestInventory) TextView itemLatestInventory;
-	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
+	@BindView(R.id.itemPhoto) ImageView itemPhoto;
+	@BindView(R.id.itemDescription) TextView itemDescription;
+	@BindView(R.id.itemInventoryNumber) TextView itemInventoryNumber;
+	@BindView(R.id.itemPurchasePrice) TextView itemPurchasePrice;
+	@BindView(R.id.itemPurchaseDate) TextView itemPurchaseDate;
+	@BindView(R.id.itemLatestInventory) TextView itemLatestInventory;
+	@BindView(R.id.progressWheel) ProgressWheel progressWheel;
 
 	private Item item;
 

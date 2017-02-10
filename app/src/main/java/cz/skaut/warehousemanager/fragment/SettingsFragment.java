@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.helper.C;
@@ -17,8 +17,8 @@ import timber.log.Timber;
 
 public class SettingsFragment extends BaseFragment {
 
-	@Bind(R.id.settingsTimeframe) TextView timeFrameText;
-	@Bind(R.id.settingsTimeframeLayout) LinearLayout timeFrameLayout;
+	@BindView(R.id.settingsTimeframe) TextView timeFrameText;
+	@BindView(R.id.settingsTimeframeLayout) LinearLayout timeFrameLayout;
 
 	private AlertDialog dialog;
 	private EditText input;

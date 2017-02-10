@@ -16,7 +16,8 @@ import org.lucasr.twowayview.ItemClickSupport;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
@@ -35,10 +36,10 @@ import timber.log.Timber;
 
 public class ItemListFragment extends BaseFragment {
 
-	@Bind(R.id.itemList) EmptyRecyclerView itemList;
-	@Bind(R.id.noItemText) TextView noItemText;
-	@Bind(R.id.progressWheel) ProgressWheel progressWheel;
-	@Bind(R.id.inventorizeButton) FloatingActionButton inventorizeButton;
+	@BindView(R.id.itemList) EmptyRecyclerView itemList;
+	@BindView(R.id.noItemText) TextView noItemText;
+	@BindView(R.id.progressWheel) ProgressWheel progressWheel;
+	@BindView(R.id.inventorizeButton) FloatingActionButton inventorizeButton;
 
 	private ItemAdapter adapter;
 

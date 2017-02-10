@@ -7,7 +7,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Warehouse;
 
@@ -36,11 +37,11 @@ public class WarehouseAdapter extends RecyclerViewAdapter<Warehouse, WarehouseAd
 		return data.get(position).getId();
 	}
 
-	public class WarehouseViewHolder extends RecyclerViewHolder {
+	class WarehouseViewHolder extends RecyclerViewHolder {
 
-		@Bind(R.id.listItem) TextView warehouseNameText;
+		@BindView(R.id.listItem) TextView warehouseNameText;
 
-		public WarehouseViewHolder(View view) {
+		WarehouseViewHolder(View view) {
 			super(view);
 		}
 
