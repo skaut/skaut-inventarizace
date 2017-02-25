@@ -8,7 +8,8 @@
 	android:background="@color/primary_light"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
-	tools:context=".MainActivity$ItemListFragment">
+	tools:context="cz.skaut.warehousemanager.fragment.ItemListFragment"
+	android:fitsSystemWindows="true">
 
 	<cz.skaut.warehousemanager.helper.EmptyRecyclerView
 		android:id="@+id/itemList"

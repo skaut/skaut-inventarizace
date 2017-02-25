@@ -10,7 +10,7 @@ import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 public abstract class OnSubscribeRealm<T extends RealmObject> implements Observable.OnSubscribe<T> {
-	private final Context context;
+	private Context context;
 
 	public OnSubscribeRealm(Context context) {
 		this.context = context.getApplicationContext();
@@ -18,13 +18,13 @@ public abstract class OnSubscribeRealm<T extends RealmObject> implements Observa
 
 	@Override
 	public void call(final Subscriber<? super T> subscriber) {
-		final Realm realm = Realm.getInstance(context);
+		final Realm realm = Realm.getDefaultInstance();
 		subscriber.add(Subscriptions.create(() -> {
-			try {
-				realm.close();
-			} catch (RealmException ex) {
-				subscriber.onError(ex);
-			}
+				try {
+					realm.close();
+				} catch (RealmException ex) {
+					subscriber.onError(ex);
+				}
 		}));
 
 		T object;

@@ -11,6 +11,9 @@ import cz.skaut.warehousemanager.manager.LoginManager;
 import cz.skaut.warehousemanager.manager.WarehouseManager;
 import timber.log.Timber;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 
 public class WarehouseApplication extends Application {
 
@@ -29,6 +32,13 @@ public class WarehouseApplication extends Application {
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		context = getApplicationContext();
+
+		// Configure Realm for the application
+		Realm.init(this);
+		RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
+		Realm.deleteRealm(realmConfiguration); // Clean slate
+		Realm.setDefaultConfiguration(realmConfiguration); // Make this Realm the default
+
 
 		// debug options
 		//Realm.deleteRealmFile(this);

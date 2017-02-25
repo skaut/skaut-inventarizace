@@ -9,11 +9,16 @@ import java.util.List;
 import cz.skaut.warehousemanager.entity.Inventory;
 
 @Root(name = "soap:Envelope", strict = false)
+
+
 public class ItemInventoryResult {
 
 	@Path("soap:Body/WarehouseItemInventoryAllResponse")
 	@ElementList(name = "WarehouseItemInventoryAllResult", entry = "WarehouseItemInventoryAllOutput", required = false)
-	private List<Inventory> inventoryList;
+	private List<Inventory> inventoryList = null;
+
+	public ItemInventoryResult() {
+    }
 
 	public Inventory getLatestInventory() {
 		if (inventoryList == null || inventoryList.isEmpty()) {
@@ -30,8 +35,6 @@ public class ItemInventoryResult {
 
 	@Override
 	public String toString() {
-		return "ItemInventoryResult{" +
-				"inventoryList=" + inventoryList +
-				'}';
+		return String.format("ItemInventoryResult{inventoryList=%s}", inventoryList);
 	}
 }

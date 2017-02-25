@@ -80,13 +80,13 @@ public class WarehouseListFragment extends BaseFragment {
 		setSubtitle(prefs.getString(C.USER_ROLE, ""));
 
 		adapter.clicks()
-				.doOnNext(view1 -> Timber.d("got smth"))
+				.doOnNext(view1 -> Timber.d("Got some data"))
 				.map(adapter::getItem)
 				.subscribe(warehouse -> {
 					getActivity().getSupportFragmentManager().beginTransaction()
 							.replace(R.id.container, ItemListFragment.newInstance(warehouse.getId()))
 							.addToBackStack(null).commit();
-					//Timber.d("id: " + warehouse.getId());
+					Timber.d("id: " + warehouse.getId());
 				});
 
 		RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);

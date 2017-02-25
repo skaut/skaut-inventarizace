@@ -38,7 +38,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
 */
 
-	// bylo public
+	// was public
 	private DividerItemDecoration(Drawable divider) {
 		mDivider = divider;
 	}

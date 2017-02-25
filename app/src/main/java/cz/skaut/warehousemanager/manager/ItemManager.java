@@ -32,15 +32,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static rx.Observable.empty;
+
 public class ItemManager {
 
-	private final Context context;
-	private final Realm realmUI;
-	private final SharedPreferences prefs;
+	private Context context;
+	private Realm realm;
+	private SharedPreferences prefs;
 
 	public ItemManager(Context ctx) {
 		context = ctx.getApplicationContext();
-		realmUI = Realm.getInstance(context);
+		realm = Realm.getDefaultInstance();
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
@@ -51,7 +53,7 @@ public class ItemManager {
 	 * @return Item
 	 */
 	public Item getItem(long id) {
-		return realmUI.where(Item.class).equalTo("id", id).findFirst();
+		return realm.where(Item.class).equalTo("id", id).findFirst();
 	}
 
 	/**
@@ -61,7 +63,7 @@ public class ItemManager {
 	 * @return list of items in the warehouse
 	 */
 	private Observable<List<Item>> getAllItems(long warehouseId) {
-		List<Item> items = realmUI.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
+		List<Item> items = realm.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
 		return Observable.just(items);
 	}
 
@@ -73,7 +75,10 @@ public class ItemManager {
 	 */
 	public List<Item> getAllUninventorizedItems(long warehouseId) {
 		// TODO: change this to reflect settings
-		return realmUI.where(Item.class).equalTo("warehouse.id", warehouseId).equalTo("latestInventory.synced", true).findAllSorted("id");
+		return realm.where(Item.class)
+				    .equalTo("warehouse.id", warehouseId)
+				    .equalTo("latestInventory.synced", true)
+				    .findAllSorted("id");
 	}
 
 	/**
@@ -84,6 +89,7 @@ public class ItemManager {
 	 */
 	public Observable<List<Item>> getItems(final long warehouseId) {
 		// return items from database if they are already loaded
+		Timber.i(">>>>>> Jumped IN the warehouse " + warehouseId);
 		if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
 			return getAllItems(warehouseId);
 		} else {
@@ -91,8 +97,8 @@ public class ItemManager {
 			return SkautISApiManager.getWarehouseApi().getAllItems(request)
 					.flatMap(itemAllResult -> RealmObservable.results(context, realm -> {
 						Timber.i("Item All: " + itemAllResult.toString());
-						realm.allObjects(Item.class).clear();
-						realm.allObjects(Inventory.class).clear();
+						realm.where(Item.class).findAll().deleteAllFromRealm();// allObjects(Item.class).clear();
+						realm.where(Inventory.class).findAll().deleteAllFromRealm(); //allObjects(Inventory.class).clear();
 						for (Item i : itemAllResult.getItemList()) {
 							Warehouse w = realm.where(Warehouse.class).equalTo("id", i.getIdWarehouse()).findFirst();
 							i.setWarehouse(w);
@@ -100,7 +106,7 @@ public class ItemManager {
 
 							realm.copyToRealm(i);
 						}
-						return realm.allObjects(Item.class);
+						return realm.where(Item.class).findAll(); //allObjects(Item.class);
 					}))
 					.flatMap(Observable::from)
 					.map(Item::getId)
@@ -129,7 +135,7 @@ public class ItemManager {
 						long inventoryTimestamp = DateTimeUtils.getTimestampFromDate(inventoryDate, C.DATETIME_FORMAT);
 
 						// save new inventory to Realm and set its properties
-						inventory = realm.copyToRealm(inventory);
+						inventory = realm.copyToRealmOrUpdate(inventory);
 						inventory.setDateTimestamp(inventoryTimestamp);
 						inventory.setSynced(true);
 
@@ -230,13 +236,13 @@ public class ItemManager {
 	 * @param items items to inventorize
 	 */
 	public void updateInventorizeStatus(final Set<Item> items) {
-		realmUI.beginTransaction();
+		realm.beginTransaction();
 		for (Item item : items) {
 			// remove previous inventories of this item
-			realmUI.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
+			realm.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
 
 			// save new inventory to database
-			Inventory inventory = realmUI.createObject(Inventory.class);
+			Inventory inventory = realm.createObject(Inventory.class);
 			inventory.setItemId(item.getId());
 			inventory.setPerson(prefs.getString(C.USER_PERSON_NAME, ""));
 			inventory.setDateTimestamp(DateTimeUtils.getCurrentTimestamp());
@@ -244,7 +250,7 @@ public class ItemManager {
 
 			item.setLatestInventory(inventory);
 		}
-		realmUI.commitTransaction();
+		realm.commitTransaction();
 
 		if (!items.isEmpty()) {
 			prefs.edit().putBoolean(C.SYNC_NEEDED, true).apply();
@@ -297,7 +303,7 @@ public class ItemManager {
 					Item tempItem = realm.where(Item.class).equalTo("id", itemId).findFirst();
 					tempItem.setSynced(true);
 					Timber.d("server responded with GUID: " + tempFileInsertResult.getGuid());
-					return Observable.empty();
+					return empty();
 				}));
 	}
 
@@ -334,7 +340,7 @@ public class ItemManager {
 					tempInventory.setSynced(true);
 					tempInventory.setId(itemInventorizeResult.getId());
 					Timber.d("got ID: " + itemInventorizeResult.getId());
-					return Observable.empty();
+					return empty();
 				}));
 	}
 }

@@ -27,7 +27,7 @@ class LoginFragment : BaseFragment() {
     val loginBox: LinearLayout by bindView(R.id.loginBox)
     val loginButton: Button by bindView(R.id.loginButton)
 
-    protected var loginLoader: RxLoader2<String, String, List<Role>>? = null
+    private var loginLoader: RxLoader2<String, String, List<Role>>? = null
 
     override fun getFragmentLayout(): Int = R.layout.fragment_login
 
@@ -80,7 +80,7 @@ class LoginFragment : BaseFragment() {
                     }
                 })
 
-        loginButton.setOnClickListener(View.OnClickListener {
+        loginButton.setOnClickListener({
             val isNameEmpty = TextUtils.isEmpty(userNameText.text)
             val isPasswordEmpty = TextUtils.isEmpty(passwordText.text)
 

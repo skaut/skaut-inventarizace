@@ -45,7 +45,7 @@ public class Role implements Parcelable {
 		return roleName + " " + unitName;
 	}
 
-	protected Role(Parcel in) {
+	private Role(Parcel in) {
 		id = in.readLong();
 		roleID = in.readInt();
 		unitName = in.readString();
@@ -65,7 +65,7 @@ public class Role implements Parcelable {
 		dest.writeString(roleName);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	public static final Parcelable.Creator<Role> CREATOR = new Parcelable.Creator<Role>() {
 		@Override
 		public Role createFromParcel(Parcel in) {

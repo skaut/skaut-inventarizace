@@ -37,9 +37,10 @@ public class ItemAdapter extends RecyclerViewAdapter<Item, ItemAdapter.ItemViewH
 
 	class ItemViewHolder extends RecyclerViewHolder {
 
-		@BindView(R.id.listItem) public TextView itemNameText;
+		@BindView(R.id.listItem)
+		TextView itemNameText;
 
-		public ItemViewHolder(View base) {
+		ItemViewHolder(View base) {
 			super(base);
 		}
 

@@ -16,12 +16,16 @@ import cz.skaut.warehousemanager.fragment.SettingsFragment;
 import cz.skaut.warehousemanager.fragment.WarehouseListFragment;
 import cz.skaut.warehousemanager.helper.C;
 
+import io.realm.Realm;
+//import io.realm.RealmResults;
+
 
 public class MainActivity extends AppCompatActivity {
 
 	@BindView(R.id.toolbar)
 	Toolbar toolbar;
 	private Unbinder unbinder;
+	Realm realm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 					.add(R.id.container, fragment)
 					.commit();
 		}
+
+		Realm.init(this);
+		realm = Realm.getDefaultInstance();
 	}
 
 	@Override
@@ -72,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onDestroy() {
+		if (!realm.isClosed()) {
+			realm.close();
+		}
 		super.onDestroy();
 		unbinder.unbind();
 	}

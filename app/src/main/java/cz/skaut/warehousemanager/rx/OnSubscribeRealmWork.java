@@ -17,7 +17,7 @@ public abstract class OnSubscribeRealmWork<T> implements Observable.OnSubscribe<
 
 	@Override
 	public void call(final Subscriber<? super T> subscriber) {
-		final Realm realm = Realm.getInstance(context);
+		final Realm realm = Realm.getDefaultInstance();
 		subscriber.add(Subscriptions.create(() -> {
 			try {
 				realm.close();

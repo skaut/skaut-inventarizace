@@ -19,12 +19,12 @@ public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> exte
 	private int lastPosition = -1;
 	private PublishSubject<Integer> clickSubject = PublishSubject.create();
 
-	public RecyclerViewAdapter(List<T> data) {
+	RecyclerViewAdapter(List<T> data) {
 		setHasStableIds(true);
 		this.data = data;
 	}
 
-	protected void subscribeClicks(View view, View parent, VH holder) {
+	void subscribeClicks(View view, View parent, VH holder) {
 		RxView.clicks(view)
 				.takeUntil(RxView.detaches(parent))
 				.doOnNext(v -> Timber.d("adapter click"))

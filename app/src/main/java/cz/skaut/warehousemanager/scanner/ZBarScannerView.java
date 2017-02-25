@@ -41,6 +41,9 @@ public class ZBarScannerView extends FrameLayout implements Camera.PreviewCallba
 		System.loadLibrary("iconv");
 	}
 
+	private Context context;
+	private AttributeSet attributeSet;
+
 	private Camera camera;
 	private CameraPreview cameraPreview;
 
@@ -51,16 +54,24 @@ public class ZBarScannerView extends FrameLayout implements Camera.PreviewCallba
 	private int imageWidth;
 	private int imageHeight;
 
+
 	public ZBarScannerView(Context context) {
 		super(context);
+		this.context = context;
 		if (!isInEditMode()) {
 			setupLayout();
 			setupScanner();
 		}
 	}
 
+	/**
+	 * @param context
+	 * @param attributeSet
+	 */
 	public ZBarScannerView(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
+		this.context = context;
+		this.attributeSet = attributeSet;
 		if (!isInEditMode()) {
 			setupLayout();
 			setupScanner();

@@ -135,7 +135,8 @@ public class ItemDetailFragment extends BaseFragment {
 		inflater.inflate(R.menu.main_menu, menu);
 	}
 
-	@OnClick(R.id.photoFab) void takePhoto() {
+	@OnClick(value = R.id.photoFab)
+	public void takePhoto() {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		// check if the phone can handle camera intent

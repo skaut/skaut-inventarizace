@@ -19,7 +19,7 @@ public abstract class OnSubscribeRealmResults<T extends RealmObject> implements 
 
 	@Override
 	public void call(final Subscriber<? super RealmResults<T>> subscriber) {
-		final Realm realm = Realm.getInstance(context);
+		final Realm realm = Realm.getDefaultInstance();
 		subscriber.add(Subscriptions.create(() -> {
 			try {
 				realm.close();

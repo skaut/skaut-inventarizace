@@ -13,6 +13,10 @@ public class LoginResponse {
 	@ElementList(name = "form", entry = "input")
 	private List<Input> data;
 
+	public LoginResponse() {
+		data = null;
+	}
+
 	public String getToken() {
 		return data.get(0).getValue();
 	}

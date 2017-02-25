@@ -19,7 +19,7 @@ public abstract class OnSubscribeRealmList<T extends RealmObject> implements Obs
 
 	@Override
 	public void call(final Subscriber<? super RealmList<T>> subscriber) {
-		final Realm realm = Realm.getInstance(context);
+		final Realm realm = Realm.getDefaultInstance();
 		subscriber.add(Subscriptions.create(() -> {
 			try {
 				realm.close();

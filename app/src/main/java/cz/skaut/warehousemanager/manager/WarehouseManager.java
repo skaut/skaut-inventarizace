@@ -15,18 +15,24 @@ import cz.skaut.warehousemanager.soap.SkautISApiManager;
 import cz.skaut.warehousemanager.soap.WarehouseAll;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 public class WarehouseManager {
 
-	private final Realm realmUI;
+	private final Realm realm;
 	private final SharedPreferences prefs;
 	private final Context context;
 
+//	private Realm realm;
+//	private Context context;
+//	private SharedPreferences prefs;
+
 	public WarehouseManager(Context ctx) {
 		context = ctx.getApplicationContext();
-		realmUI = Realm.getInstance(context);
+		realm = Realm.getDefaultInstance();
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
@@ -37,7 +43,8 @@ public class WarehouseManager {
 	 * @return Warehouse
 	 */
 	public Warehouse getWarehouse(long id) {
-		return realmUI.where(Warehouse.class).equalTo("id", id).findFirst();
+		Timber.i(">>> Vybran sklad " + id);
+		return realm.where(Warehouse.class).equalTo("id", id).findFirst();
 	}
 
 	/**
@@ -46,7 +53,9 @@ public class WarehouseManager {
 	 * @return sorted list of Warehouses
 	 */
 	private Observable<List<Warehouse>> getAllWarehousesSorted() {
-		RealmResults<Warehouse> warehouses = realmUI.allObjectsSorted(Warehouse.class, "id", RealmResults.SORT_ORDER_ASCENDING);
+		RealmResults<Warehouse> warehouses = realm.where(Warehouse.class).findAll();
+		warehouses = warehouses.sort("id");
+		warehouses = warehouses.sort("id", Sort.ASCENDING);
 		return Observable.just(new SortUtils().sort(warehouses));
 	}
 
@@ -63,17 +72,18 @@ public class WarehouseManager {
 			WarehouseAll request = new WarehouseAll();
 			return SkautISApiManager.getWarehouseApi().getAllWarehouses(request)
 					.flatMap(warehouseAllResult -> RealmObservable.work(context, realm -> {
-						// removes are existing warehouses from database
-						realm.allObjects(Warehouse.class).clear();
+						// remove are existing warehouses from database
+						realm.where(Warehouse.class).findAll().deleteAllFromRealm();
+						// copy returned warehouses to database
+						List<Warehouse> realmWarehouses = realm.copyToRealmOrUpdate(warehouseAllResult.getWarehouseList());
+						for (Warehouse w : realmWarehouses) {
+							if (w.getIdParentWarehouse() != 0) {
+								// create relationship between child and parent warehouses
+								Warehouse parentWarehouse = realm.where(Warehouse.class).equalTo("id", w.getIdParentWarehouse()).findFirst();
+								w.setParentWarehouse(parentWarehouse);
+							}
+						}
 
-						// copies returned warehouses to database
-						List<Warehouse> realmWarehouses = realm.copyToRealm(warehouseAllResult.getWarehouseList());
-						// creates relationship between child and parent warehouses
-						realmWarehouses.stream().filter(w -> w.getIdParentWarehouse() != 0).forEach(w -> {
-							// creates relationship between child and parent warehouses
-							Warehouse parentWarehouse = realm.where(Warehouse.class).equalTo("id", w.getIdParentWarehouse()).findFirst();
-							w.setParentWarehouse(parentWarehouse);
-						});
 						prefs.edit().putBoolean(C.WAREHOUSES_LOADED, true).apply();
 						return Observable.empty();
 					}))

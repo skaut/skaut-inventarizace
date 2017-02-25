@@ -8,14 +8,16 @@
 	android:background="@color/primary_light"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
-	tools:context=".MainActivity$WarehouseListFragment">
+	tools:context="cz.skaut.warehousemanager.fragment.WarehouseListFragment">
+	<!-- .MainActivity"> -->
 
 	<cz.skaut.warehousemanager.helper.EmptyRecyclerView
 		android:id="@+id/warehouseList"
 		style="@style/recyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		tools:listitem="@layout/list_item_warehouse"/>
+		tools:listitem="@layout/list_item"
+		android:clipChildren="true" />
 
 	<TextView
 		android:id="@+id/noWarehouseText"
