@@ -1,44 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center"
-	android:padding="@dimen/activity_horizontal_margin"
-	tools:context="cz.skaut.warehousemanager.fragment.RoleFragment">
-	<!-- .MainActivity"> -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity$RoleFragment">
 
-	<include
-		android:id="@+id/progressWheel"
-		layout="@layout/progress_wheel"
-		android:visibility="gone"/>
+    <RelativeLayout
+        android:id="@+id/roleBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/activity_horizontal_margin">
 
-	<RelativeLayout
-		android:id="@+id/roleBox"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:layout_alignParentBottom="true"
-		android:layout_alignParentStart="true"
-		android:layout_marginBottom="164dp">
+        <Spinner
+            android:id="@+id/roleSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-		<Button
-			android:id="@+id/chooseButton"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/roleSpinner"
-			android:layout_marginTop="10dp"
-			android:padding="10dp"
-			android:text="@string/choose"
-			android:textSize="15sp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/roleSpinner"
+            android:text="@string/choose"
+            android:textSize="15sp"
+            android:id="@+id/chooseButton" />
+    </RelativeLayout>
 
-		<Spinner
-			android:id="@+id/roleSpinner"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_centerHorizontal="true" />
-	</RelativeLayout>
+    <include
+        layout="@layout/progress_wheel"
+        android:visibility="gone"
+        android:id="@+id/progressWheel" />
 
 </RelativeLayout>

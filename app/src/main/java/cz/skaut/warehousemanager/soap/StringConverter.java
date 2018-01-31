@@ -13,30 +13,30 @@ import retrofit.mime.TypedOutput;
 
 public class StringConverter implements Converter {
 
-	@Override
-	public Object fromBody(TypedInput body, Type type) throws ConversionException {
-		String text = null;
-		try {
-			text = fromStream(body.in());
-		} catch (IOException ignored) {/*NOP*/ }
+    @Override
+    public Object fromBody(TypedInput body, Type type) throws ConversionException {
+        String text = null;
+        try {
+            text = fromStream(body.in());
+        } catch (IOException ignored) {/*NOP*/ }
 
-		return text;
-	}
+        return text;
+    }
 
-	private String fromStream(InputStream in) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		StringBuilder out = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
-		String line;
-		while ((line = reader.readLine()) != null) {
-			out.append(line);
-			out.append(newLine);
-		}
-		return out.toString();
-	}
+    private String fromStream(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+            out.append(newLine);
+        }
+        return out.toString();
+    }
 
-	@Override
-	public TypedOutput toBody(Object object) {
-		return null;
-	}
+    @Override
+    public TypedOutput toBody(Object object) {
+        return null;
+    }
 }

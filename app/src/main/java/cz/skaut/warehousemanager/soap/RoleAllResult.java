@@ -12,18 +12,18 @@ import cz.skaut.warehousemanager.entity.Role;
 @Root(name = "soap:Envelope", strict = false)
 public class RoleAllResult {
 
-	@Path("soap:Body/UserRoleAllResponse")
-	@ElementList(name = "UserRoleAllResult", entry = "UserRoleAllOutput")
-	private List<Role> roleList;
+    @Path("soap:Body/UserRoleAllResponse")
+    @ElementList(name = "UserRoleAllResult", entry = "UserRoleAllOutput")
+    private List<Role> roleList;
 
-	public List<Role> getRoleList() {
-		return roleList;
-	}
+    public List<Role> getRoleList() {
+        return roleList;
+    }
 
-	@Override
-	public String toString() {
-		return "RoleAllResult{" +
-				"roleList=" + roleList +
-				'}';
-	}
+    @Override
+    public String toString() {
+        return "RoleAllResult{" +
+                "roleList=" + roleList +
+                '}';
+    }
 }

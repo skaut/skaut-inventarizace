@@ -9,75 +9,75 @@ import io.realm.annotations.Ignore;
 @Root(name = "Inventory", strict = false)
 public class Inventory extends RealmObject {
 
-	@Element(name = "ID")
-	private long id;
+    @Element(name = "ID")
+    private long id;
 
-	@Element(name = "ID_WarehouseItem")
-	private long itemId;
+    @Element(name = "ID_WarehouseItem")
+    private long itemId;
 
-	@Element(name = "Person")
-	private String person;
+    @Element(name = "Person")
+    private String person;
 
-	@Element(name = "Note", required = false)
-	private String note;
+    @Element(name = "Note", required = false)
+    private String note;
 
-	@Ignore
-	@Element(name = "Date")
-	private String date;
+    @Ignore
+    @Element(name = "Date")
+    private String date;
 
-	private long dateTimestamp;
+    private long dateTimestamp;
 
-	private boolean synced;
+    private boolean synced;
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public long getItemId() {
-		return itemId;
-	}
+    public long getItemId() {
+        return itemId;
+    }
 
-	public void setItemId(long itemId) {
-		this.itemId = itemId;
-	}
+    public void setItemId(long itemId) {
+        this.itemId = itemId;
+    }
 
-	public String getPerson() {
-		return person;
-	}
+    public String getPerson() {
+        return person;
+    }
 
-	public void setPerson(String person) {
-		this.person = person;
-	}
+    public void setPerson(String person) {
+        this.person = person;
+    }
 
-	public String getNote() {
-		return note;
-	}
+    public String getNote() {
+        return note;
+    }
 
-	public void setNote(String note) {
-		this.note = note;
-	}
+    public void setNote(String note) {
+        this.note = note;
+    }
 
-	public String getDate() {
-		return date;
-	}
+    public String getDate() {
+        return date;
+    }
 
-	public long getDateTimestamp() {
-		return dateTimestamp;
-	}
+    public long getDateTimestamp() {
+        return dateTimestamp;
+    }
 
-	public void setDateTimestamp(long dateTimestamp) {
-		this.dateTimestamp = dateTimestamp;
-	}
+    public void setDateTimestamp(long dateTimestamp) {
+        this.dateTimestamp = dateTimestamp;
+    }
 
-	public boolean isSynced() {
-		return synced;
-	}
+    public boolean isSynced() {
+        return synced;
+    }
 
-	public void setSynced(boolean synced) {
-		this.synced = synced;
-	}
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
 }

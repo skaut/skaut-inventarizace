@@ -7,10 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,10 +19,8 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+import butterknife.InjectView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.entity.Inventory;
@@ -35,170 +33,164 @@ import timber.log.Timber;
 
 public class ItemDetailFragment extends BaseFragment {
 
-	@BindView(R.id.itemPhoto) ImageView itemPhoto;
-	@BindView(R.id.itemDescription) TextView itemDescription;
-	@BindView(R.id.itemInventoryNumber) TextView itemInventoryNumber;
-	@BindView(R.id.itemPurchasePrice) TextView itemPurchasePrice;
-	@BindView(R.id.itemPurchaseDate) TextView itemPurchaseDate;
-	@BindView(R.id.itemLatestInventory) TextView itemLatestInventory;
-	@BindView(R.id.progressWheel) ProgressWheel progressWheel;
+    private Item item;
 
-	private Item item;
+    @InjectView(R.id.itemPhoto)
+    ImageView itemPhoto;
 
-	private File file = null;
+    @InjectView(R.id.itemDescription)
+    TextView itemDescription;
 
-	private ItemManager itemManager;
+    @InjectView(R.id.itemInventoryNumber)
+    TextView itemInventoryNumber;
 
-	public static ItemDetailFragment newInstance(long itemId) {
-		ItemDetailFragment fragment = new ItemDetailFragment();
-		Bundle args = new Bundle();
-		args.putLong(C.ITEM_INDEX, itemId);
-		fragment.setArguments(args);
-		return fragment;
-	}
+    @InjectView(R.id.itemPurchasePrice)
+    TextView itemPurchasePrice;
 
-	public ItemDetailFragment() {
-		// Required empty public constructor
-	}
+    @InjectView(R.id.itemPurchaseDate)
+    TextView itemPurchaseDate;
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    @InjectView(R.id.itemLatestInventory)
+    TextView itemLatestInventory;
 
-		itemManager = WarehouseApplication.getItemManager();
+    @InjectView(R.id.progressWheel)
+    ProgressWheel progressWheel;
 
-		Bundle bundle = this.getArguments();
-		item = itemManager.getItem(bundle.getLong(C.ITEM_INDEX));
-		if (item == null) {
-			throw new AssertionError("ItemDetailFragment created without valid item");
-		}
+    private String photoPath;
 
-		setHasOptionsMenu(true);
+    private ItemManager itemManager;
 
-		setTitle(item.getName());
+    public static ItemDetailFragment newInstance(long itemId) {
+        ItemDetailFragment fragment = new ItemDetailFragment();
+        Bundle args = new Bundle();
+        args.putLong(C.ITEM_INDEX, itemId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-		itemDescription.setText(item.getDescription());
-		itemInventoryNumber.setText(item.getInventoryNumber());
-		itemPurchasePrice.setText(formatPrice(item.getPurchasePrice()));
-		itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
-		Inventory latestInventory = item.getLatestInventory();
+    public ItemDetailFragment() {
+        // Required empty public constructor
+    }
 
-		// item has no inventory yet
-		if (latestInventory == null) {
-			itemLatestInventory.setText(R.string.never);
-		} else {
-			long timestamp = latestInventory.getDateTimestamp();
-			itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
-		}
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		String photoData = item.getPhoto();
-		if (!TextUtils.isEmpty(photoData)) {
-			// decode photo to Bitmap in background thread
-			itemPhoto.setVisibility(View.GONE);
-			progressWheel.setVisibility(View.VISIBLE);
-			itemManager.decodePhoto(item.getPhoto())
-					.observeOn(AndroidSchedulers.mainThread()) // TODO: check if it works without this
-					.subscribe(bitmap -> {
-						itemPhoto.setImageBitmap(bitmap);
-						itemPhoto.setVisibility(View.VISIBLE);
-						progressWheel.setVisibility(View.GONE);
-					}, e -> {
-						Timber.e(e, "Failed to load photo");
-						itemPhoto.setVisibility(View.VISIBLE);
-						progressWheel.setVisibility(View.GONE);
-						Snackbar.make(progressWheel, R.string.get_photo_error, Snackbar.LENGTH_LONG).show();
-					});
-		}
-	}
+        itemManager = WarehouseApplication.getItemManager();
 
-	/**
-	 * Formats purchase price
-	 *
-	 * @param price price to be formatted
-	 * @return formatted price
-	 */
-	private String formatPrice(String price) {
-		NumberFormat nf = NumberFormat.getCurrencyInstance();
-		nf.setMaximumFractionDigits(0);
+        Bundle bundle = this.getArguments();
+        item = itemManager.getItem(bundle.getLong(C.ITEM_INDEX));
 
-		if (TextUtils.isEmpty(price)) {
-			return "";
-		} else {
-			float priceFloat = Float.valueOf(price);
-			return nf.format(priceFloat);
-		}
-	}
+        setHasOptionsMenu(true);
 
+        setTitle(item.getName());
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.main_menu, menu);
-	}
+        itemDescription.setText(item.getDescription());
+        itemInventoryNumber.setText(item.getInventoryNumber());
+        itemPurchasePrice.setText(item.getPurchasePrice());
+        itemPurchaseDate.setText(DateTimeUtils.getFormattedDate(item.getPurchaseDate()));
+        Inventory i = item.getLatestInventory();
 
-	@OnClick(value = R.id.photoFab)
-	public void takePhoto() {
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // item has no inventory yet
+        if (i == null) {
+            itemLatestInventory.setText(getString(R.string.never));
+        } else {
+            long timestamp = i.getDateTimestamp();
+            itemLatestInventory.setText(DateTimeUtils.getFormattedTimestamp(timestamp, C.DATE_FORMAT));
+        }
 
-		// check if the phone can handle camera intent
-		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-			try {
-				File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-				file = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
-			} catch (IOException e) {
-				Timber.e(e, "Failed to create file");
-				Snackbar.make(progressWheel, R.string.camera_file_error, Snackbar.LENGTH_LONG).show();
-			}
+        String photoData = item.getPhoto();
+        if (!TextUtils.isEmpty(photoData)) {
+            itemPhoto.setVisibility(View.GONE);
+            progressWheel.setVisibility(View.VISIBLE);
+            itemManager.getItemPhoto(item.getPhoto())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(bitmap -> {
+                        itemPhoto.setImageBitmap(bitmap);
+                        itemPhoto.setVisibility(View.VISIBLE);
+                        progressWheel.setVisibility(View.GONE);
+                    }, throwable -> {
+                        Timber.e("Unexpected error while fetching photo: " + throwable.getMessage());
+                        itemPhoto.setVisibility(View.VISIBLE);
+                        progressWheel.setVisibility(View.GONE);
+                        showToast(R.string.get_photo_error);
+                    });
+        }
+    }
 
-			if (file != null) {
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-				startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
-			}
-		} else {
-			Timber.e("Error dispatching camera intent");
-			Snackbar.make(progressWheel, R.string.camera_error, Snackbar.LENGTH_LONG).show();
-		}
-	}
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.item_detail_menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == C.CAMERA_REQUEST_CODE) {
-			if (resultCode == Activity.RESULT_OK) {
-				itemPhoto.setVisibility(View.GONE);
-				progressWheel.setVisibility(View.VISIBLE);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.item_photo) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-				// initiate saving photo
-				itemManager.saveItemPhoto(file, item.getId())
-						.observeOn(AndroidSchedulers.mainThread())
-						.subscribe(bitmap -> {
-							itemPhoto.setImageBitmap(bitmap);
-							itemPhoto.setVisibility(View.VISIBLE);
-							progressWheel.setVisibility(View.GONE);
-						}, e -> {
-							Timber.e(e, "Failed to save photo");
-							itemPhoto.setVisibility(View.VISIBLE);
-							progressWheel.setVisibility(View.GONE);
-							Snackbar.make(progressWheel, R.string.photo_save_error, Snackbar.LENGTH_LONG).show();
+            // check if the phone can handle camera intent
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException e) {
+                    Timber.e(e.getMessage());
+                    showToast(R.string.camera_file_error);
+                }
 
-							// saving photo failed, delete temporary file
-							if (!file.delete()) {
-								Timber.e("Failed to delete file");
-							}
-						});
-			} else if (resultCode == Activity.RESULT_CANCELED) {
-				// no photo taken, delete temporary file
-				if (!file.delete()) {
-					Timber.e("Failed to delete file");
-				}
-			}
-		} else {
-			super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
+                if (photoFile != null) {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                    startActivityForResult(intent, C.CAMERA_REQUEST_CODE);
+                }
+            } else {
+                Timber.e("error dispatching camera intent");
+                showToast(R.string.camera_error);
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	protected int getFragmentLayout() {
-		return R.layout.fragment_item_detail;
-	}
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == C.CAMERA_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                itemPhoto.setVisibility(View.GONE);
+                progressWheel.setVisibility(View.VISIBLE);
+
+                // initiate saving photo
+                itemManager.saveItemPhoto(photoPath, item.getId())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(bitmap -> {
+                            itemPhoto.setImageBitmap(bitmap);
+                            itemPhoto.setVisibility(View.VISIBLE);
+                            progressWheel.setVisibility(View.GONE);
+                        }, throwable -> {
+                            Timber.e(throwable.getMessage());
+                            throwable.printStackTrace();
+                            showToast(R.string.photo_save_error);
+                            itemPhoto.setVisibility(View.VISIBLE);
+                            progressWheel.setVisibility(View.GONE);
+                        });
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile("warehousemanager_", "." + C.PHOTO_EXT, storageDir);
+        photoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    @Override
+    protected int getFragmentLayout() {
+        return R.layout.fragment_item_detail;
+    }
 
 
 }

@@ -1,15 +1,16 @@
 language: android
 
-jdk: oraclejdk8
-
 android:
   components:
-    - build-tools-23.0.1
-    - android-23
+    - build-tools-22.0.0
+    - android-22
     - extra-android-m2repository
 
 notifications:
   email: false
 
+before_install:
+    - sudo chmod +x gradlew
+
 script:
-    - gradle assembleDebug
+    - ./gradlew assembleDebug

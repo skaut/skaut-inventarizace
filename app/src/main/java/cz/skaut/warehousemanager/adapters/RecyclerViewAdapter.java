@@ -1,74 +1,60 @@
 package cz.skaut.warehousemanager.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.jakewharton.rxbinding.view.RxView;
-
 import java.util.List;
-
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 public abstract class RecyclerViewAdapter<T, VH extends RecyclerViewHolder> extends RecyclerView.Adapter<VH> {
 
-	protected List<T> data;
-	private int lastPosition = -1;
-	private PublishSubject<Integer> clickSubject = PublishSubject.create();
+    protected final Context context;
+    protected final LayoutInflater inflater;
+    protected List<T> data;
+    protected int lastPosition = -1;
 
-	RecyclerViewAdapter(List<T> data) {
-		setHasStableIds(true);
-		this.data = data;
-	}
+    public RecyclerViewAdapter(Context context, List<T> data) {
+        this.context = context.getApplicationContext();
+        this.data = data;
+        inflater = LayoutInflater.from(this.context);
+        setHasStableIds(true);
+    }
 
-	void subscribeClicks(View view, View parent, VH holder) {
-		RxView.clicks(view)
-				.takeUntil(RxView.detaches(parent))
-				.doOnNext(v -> Timber.d("adapter click"))
-				.doOnTerminate(() -> Timber.d("terminate"))
-				.map(v -> holder.getAdapterPosition())
-				.subscribe(clickSubject);
-	}
+    public void setData(List<T> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
 
-	public void setData(List<T> data) {
-		this.data = data;
-		notifyDataSetChanged();
-	}
+    @Override
+    public void onBindViewHolder(VH holder, int position) {
+        setAnimation(holder.getAnimatedView(), position);
+    }
 
-	public Observable<Integer> clicks() {
-		return clickSubject.asObservable();
-	}
+    public T getItem(int position) {
+        return data.get(position);
+    }
 
-	@Override
-	public void onBindViewHolder(VH holder, int position) {
-		setAnimation(holder.getAnimatedView(), position);
-	}
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
-	public T getItem(int position) {
-		return data.get(position);
-	}
-
-	@Override
-	public int getItemCount() {
-		return data.size();
-	}
-
-	private void setAnimation(View viewToAnimate, int position) {
-		if (viewToAnimate == null) {
-			return;
-		}
-		if (position > lastPosition) {
-			Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.slide_in_left);
-			int offset = 0;
-			if (position > 0) {
-				offset = 50 * position;
-			}
-			animation.setStartOffset(offset);
-			viewToAnimate.startAnimation(animation);
-			lastPosition = position;
-		}
-	}
+    private void setAnimation(View viewToAnimate, int position) {
+        if (viewToAnimate == null) {
+            return;
+        }
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            int offset = 0;
+            if (position > 0) {
+                offset = 50 * position;
+            }
+            animation.setStartOffset(offset);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
+    }
 }

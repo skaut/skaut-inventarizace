@@ -1,14 +1,18 @@
 package cz.skaut.warehousemanager.manager;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,329 +22,293 @@ import cz.skaut.warehousemanager.entity.Item;
 import cz.skaut.warehousemanager.entity.Warehouse;
 import cz.skaut.warehousemanager.helper.C;
 import cz.skaut.warehousemanager.helper.DateTimeUtils;
-import cz.skaut.warehousemanager.rx.RealmObservable;
 import cz.skaut.warehousemanager.soap.ItemAll;
+import cz.skaut.warehousemanager.soap.ItemAllResult;
 import cz.skaut.warehousemanager.soap.ItemInventorize;
 import cz.skaut.warehousemanager.soap.ItemInventory;
+import cz.skaut.warehousemanager.soap.ItemInventoryResult;
 import cz.skaut.warehousemanager.soap.ItemPhoto;
-import cz.skaut.warehousemanager.soap.SkautISApiManager;
+import cz.skaut.warehousemanager.soap.ItemPhotoResult;
+import cz.skaut.warehousemanager.soap.SkautApiManager;
 import cz.skaut.warehousemanager.soap.TempFileInsert;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static rx.Observable.empty;
-
 public class ItemManager {
 
-	private Context context;
-	private Realm realm;
-	private SharedPreferences prefs;
+    private final Context context;
+    private final Realm realm;
+    private final SharedPreferences prefs;
 
-	public ItemManager(Context ctx) {
-		context = ctx.getApplicationContext();
-		realm = Realm.getDefaultInstance();
-		prefs = PreferenceManager.getDefaultSharedPreferences(context);
-	}
+    public ItemManager(Context ctx) {
+        context = ctx.getApplicationContext();
+        realm = Realm.getInstance(context);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
-	/**
-	 * Gets item from database
-	 *
-	 * @param id id of item
-	 * @return Item
-	 */
-	public Item getItem(long id) {
-		return realm.where(Item.class).equalTo("id", id).findFirst();
-	}
+    public Item getItem(long id) {
+        return realm.where(Item.class).equalTo("id", id).findFirst();
+    }
 
-	/**
-	 * Gets all items from selected warehouse
-	 *
-	 * @param warehouseId warehouse to get items from
-	 * @return list of items in the warehouse
-	 */
-	private Observable<List<Item>> getAllItems(long warehouseId) {
-		List<Item> items = realm.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
-		return Observable.just(items);
-	}
+    private Observable<List<Item>> getAllItems(long warehouseId) {
+        List<Item> items = realm.where(Item.class).equalTo("warehouse.id", warehouseId).findAllSorted("id");
+        return Observable.just(items);
+    }
 
-	/**
-	 * Gets all uninventorized items from selected warehouse
-	 *
-	 * @param warehouseId warehouse to get uninventorized items from
-	 * @return list of uninventorized items in the warehouse
-	 */
-	public List<Item> getAllUninventorizedItems(long warehouseId) {
-		// TODO: change this to reflect settings
-		return realm.where(Item.class)
-				    .equalTo("warehouse.id", warehouseId)
-				    .equalTo("latestInventory.synced", true)
-				    .findAllSorted("id");
-	}
+    public List<Item> getAllUninventorizedItems(long warehouseId) {
+        // TODO: change this to reflect settings
+        return realm.where(Item.class).equalTo("warehouse.id", warehouseId).equalTo("latestInventory.synced", true).findAllSorted("id");
+    }
 
-	/**
-	 * Fetches all items from remote server if needed, then returns list of items from selected warehouse
-	 *
-	 * @param warehouseId warehouse to get items from
-	 * @return list of items from selected warehouse
-	 */
-	public Observable<List<Item>> getItems(final long warehouseId) {
-		// return items from database if they are already loaded
-		Timber.i(">>>>>> Jumped IN the warehouse " + warehouseId);
-		if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
-			return getAllItems(warehouseId);
-		} else {
-			ItemAll request = new ItemAll();
-			return SkautISApiManager.getWarehouseApi().getAllItems(request)
-					.flatMap(itemAllResult -> RealmObservable.results(context, realm -> {
-						Timber.i("Item All: " + itemAllResult.toString());
-						realm.where(Item.class).findAll().deleteAllFromRealm();// allObjects(Item.class).clear();
-						realm.where(Inventory.class).findAll().deleteAllFromRealm(); //allObjects(Inventory.class).clear();
-						for (Item i : itemAllResult.getItemList()) {
-							Warehouse w = realm.where(Warehouse.class).equalTo("id", i.getIdWarehouse()).findFirst();
-							i.setWarehouse(w);
-							i.setSynced(true);
+    public Observable<List<Item>> getItems(final long warehouseId) {
+        // return items from database if they are already loaded
+        if (prefs.getBoolean(C.ITEMS_LOADED, false)) {
+            return getAllItems(warehouseId);
+        } else {
+            ItemAll request = new ItemAll();
+            return SkautApiManager.getWarehouseApi().getAllItems(request)
+                    .flatMap((ItemAllResult itemAllResult) -> {
+                        Timber.i("Item All: " + itemAllResult.toString());
+                        Realm tempRealm = Realm.getInstance(context);
+                        tempRealm.beginTransaction();
+                        tempRealm.allObjects(Item.class).clear();
+                        tempRealm.allObjects(Inventory.class).clear();
+                        List<Item> realmItems = tempRealm.copyToRealm(itemAllResult.getItemList());
+                        for (Item i : itemAllResult.getItemList()) {
+                            Warehouse w = tempRealm.where(Warehouse.class).equalTo("id", i.getIdWarehouse()).findFirst();
+                            i.setWarehouse(w);
+                            i.setSynced(true);
 
-							realm.copyToRealm(i);
-						}
-						return realm.where(Item.class).findAll(); //allObjects(Item.class);
-					}))
-					.flatMap(Observable::from)
-					.map(Item::getId)
-					.flatMap(this::getInventory)
-					.flatMap(this::getPhoto)
-					.toList()
-					.doOnCompleted(() -> prefs.edit().putBoolean(C.ITEMS_LOADED, true).apply())
-					.observeOn(AndroidSchedulers.mainThread()) // switch to main thread and fetch items
-					.flatMap(itemIds -> getAllItems(warehouseId));
-		}
-	}
+                            tempRealm.copyToRealmOrUpdate(i);
+                        }
+                        tempRealm.commitTransaction();
+                        Set<Long> itemIds = new HashSet<>();
+                        for (Item i : realmItems) {
+                            itemIds.add(i.getId());
+                        }
+                        tempRealm.close();
+                        return Observable.from(itemIds);
+                    })
+                    .flatMap(this::getInventory)
+                    .flatMap(this::getPhoto)
+                    .toList()
+                    .doOnCompleted(() -> prefs.edit().putBoolean(C.ITEMS_LOADED, true).commit())
+                    .observeOn(AndroidSchedulers.mainThread()) // switch to main thread and fetch items
+                    .flatMap(itemIds -> getAllItems(warehouseId));
+        }
+    }
 
-	/**
-	 * Fetches list of all inventories for selected item, then saves the last one to database
-	 *
-	 * @param itemId item to fetch inventories for
-	 * @return id of item to allow chaining
-	 */
-	private Observable<Long> getInventory(final long itemId) {
-		ItemInventory request = new ItemInventory(itemId);
-		return SkautISApiManager.getWarehouseApi().getItemInventory(request)
-				.flatMap(itemInventoryResult -> RealmObservable.work(context, realm -> {
-					Inventory inventory = itemInventoryResult.getLatestInventory();
-					if (inventory != null) {
-						String inventoryDate = inventory.getDate();
-						long inventoryTimestamp = DateTimeUtils.getTimestampFromDate(inventoryDate, C.DATETIME_FORMAT);
+    private Observable<Long> getInventory(final long itemId) {
+        ItemInventory request = new ItemInventory(itemId);
+        return SkautApiManager.getWarehouseApi().getItemInventory(request)
+                .map((ItemInventoryResult itemInventoryResult) -> {
+                    Inventory inventory = itemInventoryResult.getLatestInventory();
+                    if (inventory != null) {
+                        Realm tempRealm = Realm.getInstance(context);
+                        tempRealm.beginTransaction();
 
-						// save new inventory to Realm and set its properties
-						inventory = realm.copyToRealmOrUpdate(inventory);
-						inventory.setDateTimestamp(inventoryTimestamp);
-						inventory.setSynced(true);
+                        String inventoryDate = inventory.getDate();
+                        long inventoryTimestamp = DateTimeUtils.getTimestampFromDate(inventoryDate, C.DATETIME_FORMAT);
 
-						// assign new inventory to corresponding item
-						Item item = realm.where(Item.class).equalTo("id", itemId).findFirst();
-						item.setLatestInventory(inventory);
-					}
-					return itemId;
-				}));
-	}
+                        // save new inventory to Realm and set its properties
+                        inventory = tempRealm.copyToRealm(inventory);
+                        inventory.setDateTimestamp(inventoryTimestamp);
+                        inventory.setSynced(true);
 
-	/**
-	 * Fetches photo of selected item and saves it to database
-	 *
-	 * @param itemId item to fetch photo for
-	 * @return id of item to allow chaining
-	 */
-	private Observable<Long> getPhoto(final long itemId) {
-		ItemPhoto request = new ItemPhoto(itemId);
-		return SkautISApiManager.getWarehouseApi().getItemPhoto(request)
-				.flatMap(itemPhotoResult -> RealmObservable.work(context, realm -> {
-					if (itemPhotoResult.getPhotoData() != null) {
-						Item item = realm.where(Item.class).equalTo("id", itemId).findFirst();
-						item.setPhoto(itemPhotoResult.getPhotoData());
-					}
-					return itemId;
-				}));
-	}
+                        // assign new inventory to corresponding item
+                        Item item = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
+                        item.setLatestInventory(inventory);
 
-	/**
-	 * Decoded base64 photo data into Bitmap
-	 *
-	 * @param itemPhotoData photo data to be decoded
-	 * @return decoded Bitmap
-	 */
-	public Observable<Bitmap> decodePhoto(final String itemPhotoData) {
-		return Observable.create((Subscriber<? super Bitmap> subscriber) -> {
-			Timber.d("Photo data len: " + itemPhotoData.length());
-			byte[] decodedString = Base64.decode(itemPhotoData, Base64.DEFAULT);
-			Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        tempRealm.commitTransaction();
+                        tempRealm.close();
+                    }
+                    return itemId;
+                });
+    }
 
-			// send Bitmap only if subscription is still valid
-			if (!subscriber.isUnsubscribed()) {
-				subscriber.onNext(bitmap);
-				subscriber.onCompleted();
-			}
-		}).subscribeOn(Schedulers.io());
-	}
+    private Observable<Long> getPhoto(final long itemId) {
+        ItemPhoto request = new ItemPhoto(itemId);
+        return SkautApiManager.getWarehouseApi().getItemPhoto(request)
+                .map((ItemPhotoResult itemPhotoResult) -> {
+                    if (itemPhotoResult.getPhotoData() == null) {
+                        Timber.d("no photo data");
+                    } else {
+                        Realm tempRealm = Realm.getInstance(context);
+                        tempRealm.beginTransaction();
+                        Item item = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
+                        item.setPhoto(itemPhotoResult.getPhotoData());
+                        tempRealm.commitTransaction();
+                        tempRealm.close();
+                    }
+                    return itemId;
+                });
+    }
 
-	/**
-	 * Scales down photo, encodes it to base64 and saves it to database
-	 *
-	 * @param file   source file
-	 * @param itemId item to set photo to
-	 * @return Observable of Bitmap
-	 */
-	public Observable<Bitmap> saveItemPhoto(final File file, final long itemId) {
-		return RealmObservable.work(context, realm -> {
-			if (!file.exists()) {
-				throw new RuntimeException("File does not exist");
-			}
+    public Observable<Bitmap> getItemPhoto(final String itemPhotoData) {
+        return Observable.create((Subscriber<? super Bitmap> subscriber) -> {
+            if (!subscriber.isUnsubscribed()) {
+                Timber.d("Photo data len: " + itemPhotoData.length());
 
-			// load photo from file
-			Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                byte[] decodedString = Base64.decode(itemPhotoData, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-			// calculate target aspect ratio
-			float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
-			int width = Math.round(C.PHOTO_HEIGHT * aspectRatio);
+                subscriber.onNext(bitmap);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io());
+    }
 
-			// resize photo
-			Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, C.PHOTO_HEIGHT, true);
+    public Observable<Bitmap> saveItemPhoto(final String path, final long itemId) {
+        return Observable.create((Subscriber<? super Bitmap> subscriber) -> {
+            if (!TextUtils.isEmpty(path)) {
+                File file = new File(path);
+                if (!file.exists()) {
+                    // throw only when subscriber is still subscribed
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onError(new IOException("File does not exist"));
+                    }
+                    return;
+                }
 
-			// encode photo to base64
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			scaledBitmap.compress(C.PHOTO_FORMAT, C.PHOTO_COMPRESSION_QUALITY, baos);
-			byte[] bytes = baos.toByteArray();
-			String photoData = Base64.encodeToString(bytes, Base64.DEFAULT);
+                // load photo from file
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-			// save photo data to database
-			Item item = realm.where(Item.class).equalTo("id", itemId).findFirst();
-			item.setPhoto(photoData);
-			item.setSynced(false);
+                float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
+                int width = Math.round(C.PHOTO_HEIGHT * aspectRatio);
 
-			prefs.edit().putBoolean(C.SYNC_NEEDED, true).apply();
+                // resize photo
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, C.PHOTO_HEIGHT, true);
 
-			if (!file.delete()) {
-				// Fail silently, user will find empty picture :)
-				Timber.e("Failed to delete file: " + file.getAbsolutePath());
-			}
-			return scaledBitmap;
-		})
-				.subscribeOn(Schedulers.io());
-	}
+                // encode photo to base64
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                scaledBitmap.compress(C.PHOTO_FORMAT, C.PHOTO_COMPRESSION_QUALITY, baos);
+                byte[] bytes = baos.toByteArray();
+                String photoData = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-	/**
-	 * Adds new inventory to selected items
-	 *
-	 * @param items items to inventorize
-	 */
-	public void updateInventorizeStatus(final Set<Item> items) {
-		realm.beginTransaction();
-		for (Item item : items) {
-			// remove previous inventories of this item
-			realm.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
+                // save photo data to database
+                Realm tempRealm = Realm.getInstance(context);
+                tempRealm.beginTransaction();
+                Item item = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
+                item.setPhoto(photoData);
+                item.setSynced(false);
+                tempRealm.commitTransaction();
+                tempRealm.close();
 
-			// save new inventory to database
-			Inventory inventory = realm.createObject(Inventory.class);
-			inventory.setItemId(item.getId());
-			inventory.setPerson(prefs.getString(C.USER_PERSON_NAME, ""));
-			inventory.setDateTimestamp(DateTimeUtils.getCurrentTimestamp());
-			inventory.setSynced(false);
+                if (file.delete()) {
+                    // return only when subscriber is still subscribed
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onNext(scaledBitmap);
+                        subscriber.onCompleted();
+                    }
+                } else {
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onError(new IOException("Failed to delete the file"));
+                    }
+                }
+            } else {
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onError(new IllegalArgumentException("Path is empty"));
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
 
-			item.setLatestInventory(inventory);
-		}
-		realm.commitTransaction();
+    public void updateInventorizeStatus(Set<Item> items) {
+        realm.beginTransaction();
+        for (Item item : items) {
+            // remove previous inventories of this item
+            realm.where(Inventory.class).equalTo("itemId", item.getId()).findAll().clear();
 
-		if (!items.isEmpty()) {
-			prefs.edit().putBoolean(C.SYNC_NEEDED, true).apply();
-		}
-	}
+            // save new inventory to database
+            Inventory inventory = realm.createObject(Inventory.class);
+            inventory.setItemId(item.getId());
+            inventory.setPerson(prefs.getString(C.USER_PERSON_NAME, ""));
+            inventory.setDateTimestamp(DateTimeUtils.getCurrentTimestamp());
+            inventory.setSynced(false);
 
-	/**
-	 * Synchronizes saved data with remote server.
-	 * Refreshes login session first, then synchronizes items and inventories simultaneously.
-	 *
-	 * @return object indicating the method succeeded
-	 */
-	public Observable<Object> synchronize() {
-		return WarehouseApplication.getLoginManager().refreshLogin()
-				.flatMap(o -> Observable.merge(
-						synchronizeInventories(),
-						synchronizeItems()
-				))
-				.doOnCompleted(() -> prefs.edit().putBoolean(C.SYNC_NEEDED, false).apply());
-	}
+            item.setLatestInventory(inventory);
+        }
+        realm.commitTransaction();
+    }
 
-	/**
-	 * Gets list of items with new photo from database and synchronizes them with remote server.
-	 *
-	 * @return object indication the method succeeded
-	 */
-	private Observable<Object> synchronizeItems() {
-		return RealmObservable.results(context, realm ->
-				realm
-						.where(Item.class)
-						.equalTo("synced", false)
-						.findAll())
-				.flatMap(Observable::from)
-				.flatMap(this::synchronizeItem);
-	}
+    public Observable<List<Object>> synchronize() {
+        return Observable.defer(() -> WarehouseApplication.getLoginManager().refreshLogin()
+                        .flatMap(o -> Observable.merge(
+                                synchronizeInventories(),
+                                synchronizeItems()
+                        ))
+                        .toList()
+        )
+                .subscribeOn(Schedulers.io());
+    }
 
-	/**
-	 * Uploads item photo to remote server
-	 *
-	 * @param item item to be synchronized
-	 * @return object indicating the method succeeded
-	 */
-	private Observable<Object> synchronizeItem(final Item item) {
-		Timber.d("Syncing item" + item);
-		final long itemId = item.getId();
-		TempFileInsert request = new TempFileInsert("test.jpg", "jpg", item.getPhoto());
+    private Observable<Object> synchronizeItems() {
+        final Realm tempRealm = Realm.getInstance(context);
 
-		return SkautISApiManager.getWarehouseApi().uploadPhoto(request)
-				.flatMap(tempFileInsertResult -> RealmObservable.work(context, realm -> {
-					Item tempItem = realm.where(Item.class).equalTo("id", itemId).findFirst();
-					tempItem.setSynced(true);
-					Timber.d("server responded with GUID: " + tempFileInsertResult.getGuid());
-					return empty();
-				}));
-	}
+        RealmResults<Item> items = tempRealm
+                .where(Item.class)
+                .equalTo("synced", false)
+                .findAll();
 
-	/**
-	 * Gets list of new inventories from database and synchronizes them with remote server.
-	 *
-	 * @return object indication the method succeeded
-	 */
-	private Observable<Object> synchronizeInventories() {
-		return RealmObservable.results(context, realm ->
-				realm
-						.where(Inventory.class)
-						.equalTo("synced", false)
-						.findAll())
-				.flatMap(Observable::from)
-				.flatMap(this::synchronizeInventory);
-	}
+        Timber.d("I would sync following items: " + items.size());
+        return Observable.from(items)
+                .flatMap(this::synchronizeItem)
+                .finallyDo(tempRealm::close);
+    }
 
-	/**
-	 * Sends new inventory to remote server.
-	 *
-	 * @param inventory inventory to be synchronized
-	 * @return object indicating the method succeeded
-	 */
-	private Observable<Object> synchronizeInventory(final Inventory inventory) {
-		Timber.d("Syncing " + inventory);
+    private Observable<Object> synchronizeItem(final Item item) {
+        Timber.d("want to sync " + item.getName());
+        final long itemId = item.getId();
+        TempFileInsert request = new TempFileInsert("test.jpg", "jpg", item.getPhoto());
 
-		ItemInventorize request = new ItemInventorize(inventory);
-		final long itemId = inventory.getItemId();
+        return SkautApiManager.getWarehouseApi().uploadPhoto(request)
+                .flatMap(tempFileInsertResult -> {
+                    Realm tempRealm = Realm.getInstance(context);
+                    tempRealm.beginTransaction();
+                    Item tempItem = tempRealm.where(Item.class).equalTo("id", itemId).findFirst();
+                    tempItem.setSynced(true);
+                    Timber.d("server responded with GUID: " + tempFileInsertResult.getGuid());
+                    tempRealm.commitTransaction();
+                    tempRealm.close();
+                    return Observable.empty();
+                });
+    }
 
-		return SkautISApiManager.getWarehouseApi().itemInventorize(request)
-				.flatMap(itemInventorizeResult -> RealmObservable.work(context, realm -> {
-					Inventory tempInventory = realm.where(Inventory.class).equalTo("itemId", itemId).findFirst();
-					tempInventory.setSynced(true);
-					tempInventory.setId(itemInventorizeResult.getId());
-					Timber.d("got ID: " + itemInventorizeResult.getId());
-					return empty();
-				}));
-	}
+    private Observable<Object> synchronizeInventories() {
+        final Realm tempRealm = Realm.getInstance(context);
+
+        RealmResults<Inventory> inventories = tempRealm
+                .where(Inventory.class)
+                .equalTo("synced", false)
+                .findAll();
+
+        Timber.d("I will sync following inventories: " + inventories);
+        return Observable.from(inventories)
+                .flatMap(this::synchronizeInventory)
+                .finallyDo(tempRealm::close);
+    }
+
+    private Observable<Object> synchronizeInventory(final Inventory inventory) {
+        ItemInventorize request = new ItemInventorize(inventory);
+        Timber.d("syncing inventory with item id: " + inventory.getItemId() + " and date " + inventory.getDateTimestamp());
+        final long itemId = inventory.getItemId();
+
+        return SkautApiManager.getWarehouseApi().itemInventorize(request)
+                .flatMap(itemInventorizeResult -> {
+                    Realm tempRealm = Realm.getInstance(context);
+                    tempRealm.beginTransaction();
+                    Inventory tempInventory = tempRealm.where(Inventory.class).equalTo("itemId", itemId).findFirst();
+                    tempInventory.setSynced(true);
+                    tempInventory.setId(itemInventorizeResult.getId());
+                    Timber.d("got ID: " + itemInventorizeResult.getId());
+                    tempRealm.commitTransaction();
+                    tempRealm.close();
+                    return Observable.empty();
+                });
+    }
 }

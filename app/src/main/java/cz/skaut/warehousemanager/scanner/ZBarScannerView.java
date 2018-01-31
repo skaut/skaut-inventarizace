@@ -5,7 +5,6 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -16,17 +15,16 @@ import net.sourceforge.zbar.SymbolSet;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Copyright 2015 Dushyanth Maguluru
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * >
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,117 +33,72 @@ import timber.log.Timber;
  */
 
 @SuppressWarnings("deprecation")
-public class ZBarScannerView extends FrameLayout implements Camera.PreviewCallback {
+public class ZBarScannerView extends BarcodeScannerView {
 
-	static {
-		System.loadLibrary("iconv");
-	}
+    static {
+        System.loadLibrary("iconv");
+    }
 
-	private Context context;
-	private AttributeSet attributeSet;
+    private ImageScanner mScanner;
 
-	private Camera camera;
-	private CameraPreview cameraPreview;
+    private PublishSubject<String> publishSubject;
 
-	private ImageScanner scanner;
+    public ZBarScannerView(Context context) {
+        super(context);
+        if (!isInEditMode()) {
+            setupScanner();
+        }
+    }
 
-	private PublishSubject<String> publishSubject;
+    public ZBarScannerView(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+        if (!isInEditMode()) {
+            setupScanner();
+        }
+    }
 
-	private int imageWidth;
-	private int imageHeight;
+    public Observable<String> getBarcodes() {
+        // send each barcode only once
+        return publishSubject.distinct();
+    }
 
+    private void setupScanner() {
+        publishSubject = PublishSubject.create();
 
-	public ZBarScannerView(Context context) {
-		super(context);
-		this.context = context;
-		if (!isInEditMode()) {
-			setupLayout();
-			setupScanner();
-		}
-	}
+        mScanner = new ImageScanner();
+        mScanner.setConfig(0, Config.X_DENSITY, 3);
+        mScanner.setConfig(0, Config.Y_DENSITY, 3);
 
-	/**
-	 * @param context
-	 * @param attributeSet
-	 */
-	public ZBarScannerView(Context context, AttributeSet attributeSet) {
-		super(context, attributeSet);
-		this.context = context;
-		this.attributeSet = attributeSet;
-		if (!isInEditMode()) {
-			setupLayout();
-			setupScanner();
-		}
-	}
+        mScanner.setConfig(Symbol.NONE, Config.ENABLE, 0);
+        for (BarcodeFormat format : BarcodeFormat.ALL_FORMATS) {
+            mScanner.setConfig(format.getId(), Config.ENABLE, 1);
+        }
+    }
 
-	public Observable<String> getBarcodes() {
-		// send each barcode only once
-		return publishSubject.distinct();
-	}
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        Camera.Parameters parameters = camera.getParameters();
+        Camera.Size size = parameters.getPreviewSize();
+        int width = size.width;
+        int height = size.height;
 
-	private void setupLayout() {
-		cameraPreview = new CameraPreview(getContext());
-		addView(cameraPreview);
-	}
+        Image barcode = new Image(width, height, "Y800");
+        barcode.setData(data);
 
-	private void setupScanner() {
-		publishSubject = PublishSubject.create();
+        int result = mScanner.scanImage(barcode);
 
-		scanner = new ImageScanner();
-		scanner.setConfig(0, Config.X_DENSITY, 3);
-		scanner.setConfig(0, Config.Y_DENSITY, 3);
-
-		for (BarcodeFormat format : BarcodeFormat.ALL_FORMATS) {
-			scanner.setConfig(format.getId(), Config.ENABLE, 1);
-		}
-	}
-
-	public void startCamera() {
-		camera = null;
-		try {
-			camera = Camera.open();
-		} catch (RuntimeException e) {
-			Timber.e(e, "Camera open failed");
-		}
-		if (camera != null) {
-			Camera.Parameters parameters = camera.getParameters();
-			Camera.Size size = parameters.getPreviewSize();
-			imageWidth = size.width;
-			imageHeight = size.height;
-
-			cameraPreview.setCamera(camera, this);
-			cameraPreview.initCameraPreview();
-		}
-	}
-
-	public void stopCamera() {
-		if (camera != null) {
-			cameraPreview.stopCameraPreview();
-			cameraPreview.setCamera(null, null);
-			camera.release();
-			camera = null;
-		}
-	}
-
-	@Override
-	public void onPreviewFrame(byte[] data, Camera camera) {
-		Image barcode = new Image(imageWidth, imageHeight, "Y800");
-		barcode.setData(data);
-
-		int result = scanner.scanImage(barcode);
-
-		if (result != 0) {
-			SymbolSet symbols = scanner.getResults();
-			String resultCode = "";
-			for (Symbol sym : symbols) {
-				String symData = sym.getData();
-				if (!TextUtils.isEmpty(symData)) {
-					resultCode = symData;
-					break;
-				}
-			}
-			publishSubject.onNext(resultCode);
-		}
-		camera.setOneShotPreviewCallback(this);
-	}
+        if (result != 0) {
+            SymbolSet symbols = mScanner.getResults();
+            String resultCode = "";
+            for (Symbol sym : symbols) {
+                String symData = sym.getData();
+                if (!TextUtils.isEmpty(symData)) {
+                    resultCode = symData;
+                    break;
+                }
+            }
+            publishSubject.onNext(resultCode);
+        }
+        camera.setOneShotPreviewCallback(this);
+    }
 }

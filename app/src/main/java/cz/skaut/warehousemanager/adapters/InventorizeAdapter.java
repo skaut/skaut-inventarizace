@@ -1,6 +1,6 @@
 package cz.skaut.warehousemanager.adapters;
 
-import android.view.LayoutInflater;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -11,96 +11,96 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.BindView;
+import butterknife.InjectView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.entity.Item;
 import timber.log.Timber;
 
 public class InventorizeAdapter extends RecyclerViewAdapter<Item, InventorizeAdapter.InventoryViewHolder> {
 
-	private final Set<Item> inventorizedItems;
+    private final Set<Item> inventorizedItems;
 
-	public InventorizeAdapter(List<Item> data) {
-		// create new ArrayList to break RealmList connection
-		// TODO: try to remove this
-		super(new ArrayList<>(data));
-		inventorizedItems = new HashSet<>();
-	}
+    public InventorizeAdapter(Context context, List<Item> data) {
+        // create new ArrayList to break RealmList connection
+        super(context, new ArrayList<>(data));
+        inventorizedItems = new HashSet<>();
+    }
 
-	@Override
-	public InventoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_inventorize, parent, false);
-		return new InventoryViewHolder(v);
-	}
+    @Override
+    public InventoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = inflater.inflate(R.layout.list_item_inventorize, parent, false);
+        return new InventoryViewHolder(v);
+    }
 
-	@Override
-	public void onBindViewHolder(InventoryViewHolder holder, final int position) {
-		super.onBindViewHolder(holder, position);
-		final Item item = getItem(position);
-		holder.itemNameText.setText(item.getName());
-		holder.inventorizeCheckbox.setOnClickListener(view -> inventorize(item));
-	}
+    @Override
+    public void onBindViewHolder(InventoryViewHolder holder, final int position) {
+        super.onBindViewHolder(holder, position);
+        final Item item = getItem(position);
+        holder.itemNameText.setText(item.getName());
+        holder.inventorizeCheckbox.setOnClickListener(view -> inventorize(item));
+    }
 
-	@Override
-	public void setData(List<Item> data) {
-		// create new ArrayList to break RealmList connection
-		super.setData(new ArrayList<>(data));
-	}
+    @Override
+    public void setData(List<Item> data) {
+        // create new ArrayList to break RealmList connection
+        super.setData(new ArrayList<>(data));
+    }
 
-	public void inventorize(String code) {
-		// remove letters from the beginning of code
-		long itemId = Long.valueOf(code.substring(2));
+    public void inventorize(String code) {
+        // remove letters from the beginning of code
+        long itemId = Long.valueOf(code.substring(2));
 
-		// find the item in list
-		Item item = null;
-		int i = 0;
-		for (; i < data.size(); i++) {
-			if (data.get(i).getId() == itemId) {
-				item = data.get(i);
-				break;
-			}
-		}
+        // find the item in list
+        Item item = null;
+        int i = 0;
+        for (; i < data.size(); i++) {
+            if (data.get(i).getId() == itemId) {
+                item = data.get(i);
+                break;
+            }
+        }
 
-		if (item != null) {
-			inventorize(item, i);
-		} else {
-			Timber.d("Code " + code + " not found");
-		}
-	}
-	// bylo public
-	private void inventorize(Item item) {
-		int position = data.lastIndexOf(item);
-		inventorize(item, position);
-	}
+        if (item != null) {
+            inventorize(item, i);
+        } else {
+            Timber.d("Code " + code + " not found");
+        }
+    }
 
-	private void inventorize(Item item, int position) {
-		data.remove(item);
-		inventorizedItems.add(item);
-		notifyItemRemoved(position);
-	}
+    public void inventorize(Item item) {
+        int position = data.lastIndexOf(item);
+        inventorize(item, position);
+    }
 
-	public Set<Item> getInventorizedItems() {
-		return inventorizedItems;
-	}
+    private void inventorize(Item item, int position) {
+        data.remove(item);
+        inventorizedItems.add(item);
+        notifyItemRemoved(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return data.get(position).getId();
-	}
+    public Set<Item> getInventorizedItems() {
+        return inventorizedItems;
+    }
 
-	class InventoryViewHolder extends RecyclerViewHolder {
+    @Override
+    public long getItemId(int position) {
+        return data.get(position).getId();
+    }
 
-		@BindView(R.id.itemListInventorize) TextView itemNameText;
-		@BindView(R.id.inventorizeCheckbox) CheckBox inventorizeCheckbox;
+    class InventoryViewHolder extends RecyclerViewHolder {
+        @InjectView(R.id.itemListInventorize)
+        TextView itemNameText;
 
-		// bylo public
-		InventoryViewHolder(View base) {
-			super(base);
-		}
+        @InjectView(R.id.inventorizeCheckbox)
+        CheckBox inventorizeCheckbox;
 
-		@Override
-		public View getAnimatedView() {
-			return null;
-		}
-	}
+        public InventoryViewHolder(View base) {
+            super(base);
+        }
+
+        @Override
+        public View getAnimatedView() {
+            return null;
+        }
+    }
 }
