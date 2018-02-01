@@ -6,13 +6,12 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 
+public abstract class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-abstract class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    public RecyclerViewHolder(View view) {
+        super(view);
+        ButterKnife.inject(this, view);
+    }
 
-	RecyclerViewHolder(View view) {
-		super(view);
-		ButterKnife.bind(this, view);
-	}
-
-	public abstract View getAnimatedView();
+    public abstract View getAnimatedView();
 }

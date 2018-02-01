@@ -2,10 +2,10 @@ package cz.skaut.warehousemanager.fragment;
 
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,9 +16,7 @@ import org.lucasr.twowayview.ItemClickSupport;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import butterknife.InjectView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.adapters.ItemAdapter;
@@ -36,111 +34,118 @@ import timber.log.Timber;
 
 public class ItemListFragment extends BaseFragment {
 
-	@BindView(R.id.itemList) EmptyRecyclerView itemList;
-	@BindView(R.id.noItemText) TextView noItemText;
-	@BindView(R.id.progressWheel) ProgressWheel progressWheel;
-	@BindView(R.id.inventorizeButton) FloatingActionButton inventorizeButton;
+    @InjectView(R.id.itemList)
+    EmptyRecyclerView itemList;
 
-	private ItemAdapter adapter;
+    @InjectView(R.id.noItemText)
+    TextView noItemText;
 
-	private Warehouse warehouse;
+    @InjectView(R.id.progressWheel)
+    ProgressWheel progressWheel;
 
-	public static ItemListFragment newInstance(long warehouseId) {
-		ItemListFragment fragment = new ItemListFragment();
-		Bundle args = new Bundle();
-		args.putLong(C.WAREHOUSE_INDEX, warehouseId);
-		fragment.setArguments(args);
-		return fragment;
-	}
+    private ItemAdapter adapter;
 
-	public ItemListFragment() {
-		// Required empty public constructor
-	}
+    private Warehouse warehouse;
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    public static ItemListFragment newInstance(long warehouseId) {
+        ItemListFragment fragment = new ItemListFragment();
+        Bundle args = new Bundle();
+        args.putLong(C.WAREHOUSE_INDEX, warehouseId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-		setHasOptionsMenu(true);
+    public ItemListFragment() {
+        // Required empty public constructor
+    }
 
-		WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
-		ItemManager itemManager = WarehouseApplication.getItemManager();
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		Bundle bundle = this.getArguments();
-		warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
-		if (warehouse == null) {
-			throw new AssertionError("ItemListFragment created without valid warehouse");
-		}
+        setHasOptionsMenu(true);
 
-		setTitle(warehouse.getName());
+        WarehouseManager warehouseManager = WarehouseApplication.getWarehouseManager();
+        ItemManager itemManager = WarehouseApplication.getItemManager();
 
-		// configure RecyclerView
-		itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
-		itemList.setHasFixedSize(true);
-		itemList.setEmptyView(noItemText);
-		itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+        Bundle bundle = this.getArguments();
+        warehouse = warehouseManager.getWarehouse(bundle.getLong(C.WAREHOUSE_INDEX));
 
-		// configure adapter
-		adapter = new ItemAdapter(Collections.<Item>emptyList());
-		itemList.setAdapter(adapter);
+        setTitle(warehouse.getName());
 
-		ItemClickSupport clickSupport = ItemClickSupport.addTo(itemList);
-		clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
-			Item item = adapter.getItem(position);
-			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, ItemDetailFragment.newInstance(item.getId()))
-					.addToBackStack(null).commit();
-		});
+        itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        itemList.setHasFixedSize(true);
+        itemList.setEmptyView(noItemText);
+        itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
-		final RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        adapter = new ItemAdapter(getActivity(), Collections.<Item>emptyList());
+        itemList.setAdapter(adapter);
 
-		// create item loader
-		loaderManager.create(
-				itemManager.getItems(warehouse.getId()),
-				new RxLoaderObserver<List<Item>>() {
-					@Override
-					public void onStarted() {
-						progressWheel.setVisibility(View.VISIBLE);
-						itemList.setVisibility(View.GONE);
-						noItemText.setVisibility(View.GONE);
-					}
+        ItemClickSupport clickSupport = ItemClickSupport.addTo(itemList);
+        clickSupport.setOnItemClickListener((recyclerView, view1, position, l) -> {
+            Item item = adapter.getItem(position);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, ItemDetailFragment.newInstance(item.getId()))
+                    .addToBackStack(null).commit();
+        });
 
-					@Override
-					public void onNext(List<Item> items) {
-						adapter.setData(items);
-						if (!items.isEmpty()) {
-							inventorizeButton.setVisibility(View.VISIBLE);
-						}
-					}
+        final RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
 
-					@Override
-					public void onCompleted() {
-						progressWheel.setVisibility(View.GONE);
-						itemList.setVisibility(View.VISIBLE);
-					}
+        loaderManager.create(
+                itemManager.getItems(warehouse.getId()),
+                new RxLoaderObserver<List<Item>>() {
+                    @Override
+                    public void onStarted() {
+                        progressWheel.setVisibility(View.VISIBLE);
+                        itemList.setVisibility(View.GONE);
+                        noItemText.setVisibility(View.GONE);
+                    }
 
-					@Override
-					public void onError(Throwable e) {
-						// TODO: handle errors
-						Timber.e(e.getMessage());
-						e.printStackTrace();
-					}
-				}).start();
-	}
+                    @Override
+                    public void onNext(List<Item> items) {
+                        adapter.setData(items);
+                    }
 
-	@Override
-	protected int getFragmentLayout() {
-		return R.layout.fragment_item_list;
-	}
+                    @Override
+                    public void onCompleted() {
+                        progressWheel.setVisibility(View.GONE);
+                        itemList.setVisibility(View.VISIBLE);
 
-	@OnClick(R.id.inventorizeButton) void inventorize() {
-		getActivity().getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
-				.addToBackStack(null).commit();
-	}
+                        // show inventorize option
+                        getActivity().supportInvalidateOptionsMenu();
+                    }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.main_menu, menu);
-	}
+                    @Override
+                    public void onError(Throwable e) {
+                        // TODO: handle errors
+                        Timber.e(e.getMessage());
+                        e.printStackTrace();
+                    }
+                }).start();
+    }
+
+    @Override
+    protected int getFragmentLayout() {
+        return R.layout.fragment_item_list;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (prefs.getBoolean(C.ITEMS_LOADED, false) && adapter.getItemCount() > 0) {
+            inflater.inflate(R.menu.item_list_menu, menu);
+        }
+        inflater.inflate(R.menu.main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.warehouse_inventorize) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, InventorizeFragment.newInstance(warehouse.getId()))
+                    .addToBackStack(null).commit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

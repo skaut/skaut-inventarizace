@@ -10,136 +10,136 @@ import io.realm.annotations.PrimaryKey;
 @Root(name = "Item", strict = false)
 public class Item extends RealmObject {
 
-	@PrimaryKey
-	@Element(name = "ID")
-	private long id;
+    @PrimaryKey
+    @Element(name = "ID")
+    private long id;
 
-	@Element(name = "DisplayName")
-	private String name;
+    @Element(name = "DisplayName")
+    private String name;
 
-	private Warehouse warehouse;
+    private Warehouse warehouse;
 
-	@Ignore
-	@Element(name = "ID_Warehouse")
-	private long idWarehouse;
+    @Ignore
+    @Element(name = "ID_Warehouse")
+    private long idWarehouse;
 
-	@Element(name = "InventoryNumber", required = false)
-	private String inventoryNumber;
+    @Element(name = "InventoryNumber", required = false)
+    private String inventoryNumber;
 
-	@Element(name = "Description", required = false)
-	private String description;
+    @Element(name = "Description", required = false)
+    private String description;
 
-	@Element(name = "PurchasePrice", required = false)
-	private String purchasePrice;
+    @Element(name = "PurchasePrice", required = false)
+    private String purchasePrice;
 
-	@Element(name = "InWarehouse", required = false)
-	private boolean isInWarehouse;
+    @Element(name = "InWarehouse", required = false)
+    private boolean isInWarehouse;
 
-	@Element(name = "PurchaseDate", required = false)
-	private String purchaseDate;
+    @Element(name = "PurchaseDate", required = false)
+    private String purchaseDate;
 
-	private Inventory latestInventory;
+    private Inventory latestInventory;
 
-	private boolean synced;
+    private boolean synced;
 
-	private String photo;
+    private String photo;
 
-	public Item() {
-	}
+    public Item() {
+    }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Warehouse getWarehouse() {
-		return warehouse;
-	}
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
 
-	public void setWarehouse(Warehouse warehouse) {
-		this.warehouse = warehouse;
-	}
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
 
-	public long getIdWarehouse() {
-		return idWarehouse;
-	}
+    public long getIdWarehouse() {
+        return idWarehouse;
+    }
 
-	public void setIdWarehouse(long idWarehouse) {
-		this.idWarehouse = idWarehouse;
-	}
+    public void setIdWarehouse(long idWarehouse) {
+        this.idWarehouse = idWarehouse;
+    }
 
-	public String getInventoryNumber() {
-		return inventoryNumber;
-	}
+    public String getInventoryNumber() {
+        return inventoryNumber;
+    }
 
-	public void setInventoryNumber(String inventoryNumber) {
-		this.inventoryNumber = inventoryNumber;
-	}
+    public void setInventoryNumber(String inventoryNumber) {
+        this.inventoryNumber = inventoryNumber;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getPurchasePrice() {
-		return purchasePrice;
-	}
+    public String getPurchasePrice() {
+        return purchasePrice;
+    }
 
-	public void setPurchasePrice(String purchasePrice) {
-		this.purchasePrice = purchasePrice;
-	}
+    public void setPurchasePrice(String purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
 
-	public boolean isInWarehouse() {
-		return isInWarehouse;
-	}
+    public boolean isInWarehouse() {
+        return isInWarehouse;
+    }
 
-	public void setIsInWarehouse(boolean isInWarehouse) {
-		this.isInWarehouse = isInWarehouse;
-	}
+    public void setIsInWarehouse(boolean isInWarehouse) {
+        this.isInWarehouse = isInWarehouse;
+    }
 
-	public String getPurchaseDate() {
-		return purchaseDate;
-	}
+    public String getPurchaseDate() {
+        return purchaseDate;
+    }
 
-	public void setPurchaseDate(String purchaseDate) {
-		this.purchaseDate = purchaseDate;
-	}
+    public void setPurchaseDate(String purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
 
-	public Inventory getLatestInventory() {
-		return latestInventory;
-	}
+    public Inventory getLatestInventory() {
+        return latestInventory;
+    }
 
-	public void setLatestInventory(Inventory latestInventory) {
-		this.latestInventory = latestInventory;
-	}
+    public void setLatestInventory(Inventory latestInventory) {
+        this.latestInventory = latestInventory;
+    }
 
-	public boolean isSynced() {
-		return synced;
-	}
+    public boolean isSynced() {
+        return synced;
+    }
 
-	public void setSynced(boolean synced) {
-		this.synced = synced;
-	}
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
 
-	public String getPhoto() {
-		return photo;
-	}
+    public String getPhoto() {
+        return photo;
+    }
 
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
 }

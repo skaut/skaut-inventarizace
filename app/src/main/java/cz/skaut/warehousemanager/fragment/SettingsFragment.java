@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.BindView;
+import butterknife.InjectView;
 import butterknife.OnClick;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.helper.C;
@@ -17,72 +17,78 @@ import timber.log.Timber;
 
 public class SettingsFragment extends BaseFragment {
 
-	@BindView(R.id.settingsTimeframe) TextView timeFrameText;
-	@BindView(R.id.settingsTimeframeLayout) LinearLayout timeFrameLayout;
+    @InjectView(R.id.settingsTimeframe)
+    TextView timeFrameText;
 
-	private AlertDialog dialog;
-	private EditText input;
+    @InjectView(R.id.settingsTimeframeLayout)
+    LinearLayout timeFrameLayout;
 
-	private long period;
+    private AlertDialog dialog;
 
-	public static SettingsFragment newInstance() {
-		return new SettingsFragment();
-	}
+    private EditText input;
 
-	public SettingsFragment() {
-		// Required empty public constructor
-	}
+    private long period;
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    public static SettingsFragment newInstance() {
+        return new SettingsFragment();
+    }
 
-		showUpButton();
-		setTitle(R.string.settings);
-		setSubtitle("");
+    public SettingsFragment() {
+        // Required empty public constructor
+    }
 
-		Timber.d("OnViewCreated");
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		period = prefs.getLong(C.INVENTORIZE_PERIOD_DAYS, 0);
-		timeFrameText.setText(String.valueOf(period));
+        showUpButton();
+        setTitle(R.string.settings);
+        setSubtitle("");
 
-		input = new EditText(getActivity());
-		input.setInputType(InputType.TYPE_CLASS_NUMBER);
-		input.setText(String.valueOf(period));
+        Timber.d("OnViewCreated");
 
-		dialog = createDialog();
-	}
+        period = prefs.getLong(C.INVENTORIZE_PERIOD_DAYS, 0);
+        timeFrameText.setText(String.valueOf(period));
 
-	@OnClick(R.id.settingsTimeframeLayout) void showDialog() {
-		dialog.show();
-		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-			if (input.getText().length() > 0) {
-				updatePreference(Long.valueOf(input.getText().toString()));
-				timeFrameText.setText(input.getText().toString());
-				dialog.dismiss();
-			}
-		});
-	}
+        input = new EditText(getActivity());
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setText(String.valueOf(period));
 
-	private AlertDialog createDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.inventory_timeframe)
-				.setMessage(R.string.inventory_days)
-				.setView(input)
-				.setPositiveButton(R.string.save, null) // listener is set later to enable not dismissing the dialog
-				.setNegativeButton(R.string.cancel, (dialogInterface, position) -> {
-					input.setText(String.valueOf(period));
-				});
-		return builder.create();
-	}
+        dialog = createDialog();
+    }
 
-	private void updatePreference(long newPeriod) {
-		prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).apply();
-		period = newPeriod;
-	}
+    @OnClick(R.id.settingsTimeframeLayout)
+    void showDialog() {
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+            if (input.getText().length() > 0) {
+                updatePreference(Long.valueOf(input.getText().toString()));
+                timeFrameText.setText(input.getText().toString());
+                dialog.dismiss();
+            }
+        });
+    }
 
-	@Override
-	protected int getFragmentLayout() {
-		return R.layout.fragment_settings;
-	}
+    private AlertDialog createDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Období inventarizace")
+                .setMessage("Počet dní mezi jednotlivými inventarizacemi")
+                .setView(input)
+                .setPositiveButton(R.string.save, null) // listener is set later to enable not dismissing the dialog
+                .setNegativeButton(R.string.cancel, (dialogInterface, position) -> {
+                    input.setText(String.valueOf(period));
+                    Timber.d("canceled");
+                });
+        return builder.create();
+    }
+
+    private void updatePreference(long newPeriod) {
+        prefs.edit().putLong(C.INVENTORIZE_PERIOD_DAYS, newPeriod).commit();
+        period = newPeriod;
+    }
+
+    @Override
+    protected int getFragmentLayout() {
+        return R.layout.fragment_settings;
+    }
 }

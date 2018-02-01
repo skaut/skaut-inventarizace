@@ -7,7 +7,7 @@ import android.view.View;
 
 import java.util.Collections;
 
-import butterknife.BindView;
+import butterknife.InjectView;
 import cz.skaut.warehousemanager.R;
 import cz.skaut.warehousemanager.WarehouseApplication;
 import cz.skaut.warehousemanager.adapters.InventorizeAdapter;
@@ -20,71 +20,69 @@ import timber.log.Timber;
 
 public class InventorizeFragment extends BaseFragment {
 
-	@BindView(R.id.scanner) ZBarScannerView scannerView;
-	@BindView(R.id.itemInventorizeList) RecyclerView itemList;
+    @InjectView(R.id.scanner)
+    ZBarScannerView scannerView;
 
-	private InventorizeAdapter adapter;
+    @InjectView(R.id.itemInventorizeList)
+    RecyclerView itemList;
 
-	private ItemManager itemManager;
+    private InventorizeAdapter adapter;
 
-	public static InventorizeFragment newInstance(long warehouseId) {
-		InventorizeFragment fragment = new InventorizeFragment();
-		Bundle args = new Bundle();
-		args.putLong(C.WAREHOUSE_INDEX, warehouseId);
-		fragment.setArguments(args);
-		return fragment;
-	}
+    private ItemManager itemManager;
 
-	public InventorizeFragment() {
-		// Required empty public constructor
-	}
+    public static InventorizeFragment newInstance(long warehouseId) {
+        InventorizeFragment fragment = new InventorizeFragment();
+        Bundle args = new Bundle();
+        args.putLong(C.WAREHOUSE_INDEX, warehouseId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    public InventorizeFragment() {
+        // Required empty public constructor
+    }
 
-		setHasOptionsMenu(true);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		Bundle bundle = this.getArguments();
-		long warehouseId = bundle.getLong(C.WAREHOUSE_INDEX);
+        setHasOptionsMenu(true);
 
-		itemManager = WarehouseApplication.getItemManager();
+        Bundle bundle = this.getArguments();
+        long warehouseId = bundle.getLong(C.WAREHOUSE_INDEX);
 
-		// configure RecyclerView
-		itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
-		itemList.setHasFixedSize(true);
-		itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+        itemManager = WarehouseApplication.getItemManager();
 
-		// configure adapter
-		adapter = new InventorizeAdapter(Collections.<Item>emptyList());
-		itemList.setAdapter(adapter);
-		adapter.setData(itemManager.getAllUninventorizedItems(warehouseId));
+        itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        itemList.setHasFixedSize(true);
+        itemList.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
-		// subscribe for barcode events
-		scannerView.getBarcodes().subscribe(barcode -> {
-			Timber.d("Got code: " + barcode);
-			adapter.inventorize(barcode);
-		});
-	}
+        adapter = new InventorizeAdapter(getActivity(), Collections.<Item>emptyList());
+        itemList.setAdapter(adapter);
+        adapter.setData(itemManager.getAllUninventorizedItems(warehouseId));
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		scannerView.startCamera();
-	}
+        // subscribe for barcode events
+        scannerView.getBarcodes().subscribe(barcode -> {
+            Timber.d("Got code: " + barcode);
+            adapter.inventorize(barcode);
+        });
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		scannerView.stopCamera();
+    @Override
+    public void onResume() {
+        super.onResume();
+        scannerView.startCamera();
+    }
 
-		// send inventorized items to manager
-		// TODO: check what happens if onPause is called twice on the same fragment!!
-		itemManager.updateInventorizeStatus(adapter.getInventorizedItems());
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        scannerView.stopCamera();
+        itemManager.updateInventorizeStatus(adapter.getInventorizedItems());
+    }
 
-	@Override
-	protected int getFragmentLayout() {
-		return R.layout.fragment_inventorize;
-	}
+    @Override
+    protected int getFragmentLayout() {
+        return R.layout.fragment_inventorize;
+    }
 }

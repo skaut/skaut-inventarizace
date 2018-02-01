@@ -11,18 +11,18 @@ import cz.skaut.warehousemanager.entity.Warehouse;
 @Root(name = "soap:Envelope", strict = false)
 public class WarehouseAllResult {
 
-	@Path("soap:Body/WarehouseAllResponse")
-	@ElementList(name = "WarehouseAllResult", entry = "WarehouseAllOutput")
-	private List<Warehouse> warehouseList;
+    @Path("soap:Body/WarehouseAllResponse")
+    @ElementList(name = "WarehouseAllResult", entry = "WarehouseAllOutput")
+    private List<Warehouse> warehouseList;
 
-	public List<Warehouse> getWarehouseList() {
-		return warehouseList;
-	}
+    public List<Warehouse> getWarehouseList() {
+        return warehouseList;
+    }
 
-	@Override
-	public String toString() {
-		return "WarehouseAllOutput{" +
-				"warehouseList=" + warehouseList +
-				'}';
-	}
+    @Override
+    public String toString() {
+        return "WarehouseAllOutput{" +
+                "warehouseList=" + warehouseList +
+                '}';
+    }
 }

@@ -1,80 +1,50 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'android-apt'
-apply plugin: 'realm-android'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.jakewharton.butterknife'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 22
+    buildToolsVersion '26.0.2'
+
     defaultConfig {
         applicationId "cz.skaut.warehousemanager"
-        minSdkVersion 23
-        targetSdkVersion 25
+        minSdkVersion 16
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            debuggable true
         }
     }
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
-        exclude 'AUTHORS'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dexOptions {
-        preDexLibraries = false
-    }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-    dataBinding {
-        enabled = true
-    }
-    productFlavors {
-    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:recyclerview-v7:25.2.0'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.pnikosis:materialish-progress:1.7'
-    compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile('com.squareup.retrofit:converter-simplexml:1.9.0') {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
         exclude group: 'xpp3', module: 'xpp3'
     }
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.jakewharton.timber:timber:4.5.1'
-    compile 'me.dm7.barcodescanner:zbar:1.9'
-    compile('me.tatarka.rxloader:rxloader:1.1.0') {
-        exclude group: 'io.reactivex', module: 'rxandroid'
-    }
-    compile 'com.jakewharton.rxbinding:rxbinding:1.0.0'
-    compile 'com.jakewharton:butterknife:8.5.1'
-    apt 'com.jakewharton:butterknife-compiler:8.5.1'
-    compile 'io.reactivex:rxjava:1.2.6'
-    compile 'com.google.dagger:dagger:2.9'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
-    provided 'org.glassfish:javax.annotation:10.0-b28'
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.6'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-repositories {
-    jcenter()
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton.timber:timber:3.0.2'
+    compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
+    compile 'com.android.support:recyclerview-v7:22.1.0'
+    compile 'me.dm7.barcodescanner:zbar:1.7'
+    compile 'io.realm:realm-android:0.80.2'
+    compile 'com.pnikosis:materialish-progress:1.5'
+    compile 'me.tatarka.rxloader:rxloader:1.1.0'
+    annotationProcessor 'com.jakewharton:butterknife:6.1.0'
+    annotationProcessor 'io.realm:realm-android:0.80.2'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
 }
